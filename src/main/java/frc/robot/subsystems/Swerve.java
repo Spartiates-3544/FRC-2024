@@ -8,9 +8,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMUConfiguration;
 
@@ -34,7 +33,9 @@ public class Swerve extends SubsystemBase {
         //gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.configAllSettings(new PigeonIMUConfiguration());
         gyro.setYaw(0);
+
         field = new Field2d();
+        SmartDashboard.putData(field);
 
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -61,6 +62,8 @@ public class Swerve extends SubsystemBase {
             return false;
          },
          this);
+
+         PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("traj").setPoses(poses));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -158,6 +161,5 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
-        SmartDashboard.putData(field);
     }
 }

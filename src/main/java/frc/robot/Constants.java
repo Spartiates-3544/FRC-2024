@@ -26,8 +26,8 @@ public final class Constants {
         COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(15.25); //TODO: This must be tuned to specific robot
-        public static final double wheelBase = Units.inchesToMeters(15.25); //TODO: This must be tuned to specific robot
+        public static final double trackWidth = Units.inchesToMeters(26.0);
+        public static final double wheelBase = Units.inchesToMeters(26.0);
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
@@ -153,7 +153,7 @@ public final class Constants {
     }
 
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
-        public static final double kMaxSpeedMetersPerSecond = 1;
+        public static final double kMaxSpeedMetersPerSecond = 5;
         public static final double kMaxAccelerationMetersPerSecondSquared = 1;
         public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
@@ -170,7 +170,16 @@ public final class Constants {
         public static final HolonomicPathFollowerConfig holonomicPathFollower = new HolonomicPathFollowerConfig(new PIDConstants(kPXController, 0, 0),
          new PIDConstants(kPThetaController, 0, 0),
          kMaxSpeedMetersPerSecond,
-         Units.inchesToMeters(10),
+         Units.inchesToMeters(15),
          new ReplanningConfig());
+    }
+
+    public static final class ArmConstants {
+        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(124.27);
+        public static final SensorDirectionValue cancoderInvert = SensorDirectionValue.Clockwise_Positive;
+        public static final double kP = 10;
+        public static final double MotionMagicAcceleration = 5;
+        public static final double MotionMagicCruiseVelocity = 5;
+        public static final double MotionMagicJerk = 0;
     }
 }

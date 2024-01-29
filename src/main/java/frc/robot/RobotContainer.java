@@ -1,11 +1,15 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -34,9 +38,12 @@ public class RobotContainer {
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton zeroArm = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton moveArm = new JoystickButton(driver, XboxController.Button.kB.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
+    private final Arm arm = new Arm();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -44,15 +51,17 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis) * 0.7, 
+                () -> -driver.getRawAxis(translationAxis) * 0.3, 
                 () -> -driver.getRawAxis(strafeAxis) * 0.35, 
                 () -> -driver.getRawAxis(rotation) * 0.35, 
                 () -> robotCentric.getAsBoolean()
             )
         );
 
+        //arm.setDefaultCommand(Commands.run(() -> arm.pourcentageControl(() -> ((driver.getRawAxis(3) - driver.getRawAxis(2)) * 0.5)), arm));
         // Configure the button bindings
         configureButtonBindings();
+        registerCommands();
     }
 
     /**
@@ -64,6 +73,13 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+        zeroArm.onTrue(new InstantCommand(() -> arm.setAngle(Rotation2d.fromRotations(0.35)), arm));
+        moveArm.onTrue(new InstantCommand(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
+    }
+
+    private void registerCommands() {
+        NamedCommands.registerCommand("leverBras", new InstantCommand(() -> arm.setAngle(Rotation2d.fromRotations(0.6))));
+        NamedCommands.registerCommand("zeroBras", new InstantCommand(() -> arm.setAngle(Rotation2d.fromRotations(0.35))));
     }
 
     /**
@@ -74,6 +90,6 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
         //return new exampleAuto(s_Swerve);
-        return new PathPlannerAuto("test");
+        return new PathPlannerAuto("test2");
     }
 }

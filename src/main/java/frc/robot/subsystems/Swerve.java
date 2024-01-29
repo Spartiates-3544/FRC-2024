@@ -88,7 +88,8 @@ public class Swerve extends SubsystemBase {
     }    
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {
-        SwerveModuleState[] states = Constants.Swerve.swerveKinematics.toSwerveModuleStates(speeds);
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+        SwerveModuleState[] states = Constants.Swerve.swerveKinematics.toSwerveModuleStates(targetSpeeds);
         setModuleStates(states);
     }
 

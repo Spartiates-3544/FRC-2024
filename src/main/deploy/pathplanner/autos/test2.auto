@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.0,
-      "y": 0.0
+      "x": 2.5,
+      "y": 6.18
     },
     "rotation": 0
   },
@@ -12,9 +12,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "leverBras"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "8"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "zeroBras"
           }
         }
       ]

@@ -4,16 +4,13 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -72,14 +69,14 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        zeroArm.onTrue(new InstantCommand(() -> arm.setAngle(Rotation2d.fromRotations(0.35)), arm));
-        moveArm.onTrue(new InstantCommand(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
+        zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
+        zeroArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35)), arm));
+        moveArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
     }
 
     private void registerCommands() {
-        NamedCommands.registerCommand("leverBras", new InstantCommand(() -> arm.setAngle(Rotation2d.fromRotations(0.6))));
-        NamedCommands.registerCommand("zeroBras", new InstantCommand(() -> arm.setAngle(Rotation2d.fromRotations(0.35))));
+        NamedCommands.registerCommand("leverBras", Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6))));
+        NamedCommands.registerCommand("zeroBras", Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35))));
     }
 
     /**

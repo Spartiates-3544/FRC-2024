@@ -7,10 +7,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -37,10 +38,12 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton zeroArm = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton moveArm = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final POVButton toggleIntake = new POVButton(driver, 0);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Arm arm = new Arm();
+    private final Intake intake = new Intake();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -72,6 +75,8 @@ public class RobotContainer {
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
         zeroArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35)), arm));
         moveArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
+
+        toggleIntake.toggleOnTrue(intake.runIntake(0.5));
     }
 
     private void registerCommands() {

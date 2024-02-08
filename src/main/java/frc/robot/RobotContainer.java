@@ -3,12 +3,19 @@ package frc.robot;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import java.io.Console;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -38,8 +45,10 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton zeroArm = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton moveArm = new JoystickButton(driver, XboxController.Button.kB.value);
+    //private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
     private final POVButton toggleIntake = new POVButton(driver, 0);
 
+    private Command pathfind;
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Arm arm = new Arm();
@@ -51,13 +60,15 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis) * 0.3, 
-                () -> -driver.getRawAxis(strafeAxis) * 0.35, 
-                () -> -driver.getRawAxis(rotation) * 0.35, 
+                () -> -driver.getRawAxis(translationAxis) * 0.5, 
+                () -> -driver.getRawAxis(strafeAxis) * 0.5, 
+                () -> -driver.getRawAxis(rotation) * 0.20, 
                 () -> robotCentric.getAsBoolean()
             )
         );
 
+        SmartDashboard.putData(CommandScheduler.getInstance());
+        pathfind = AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10);
         //arm.setDefaultCommand(Commands.run(() -> arm.pourcentageControl(() -> ((driver.getRawAxis(3) - driver.getRawAxis(2)) * 0.5)), arm));
         // Configure the button bindings
         configureButtonBindings();
@@ -76,9 +87,10 @@ public class RobotContainer {
         zeroArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35)), arm));
         moveArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
 
-        toggleIntake.toggleOnTrue(intake.runIntake(0.5));
-    }
+        toggleIntake.toggleOnTrue(intake.runIntake(0.3));
 
+        //move.onTrue(pathfind);
+    }
     private void registerCommands() {
         NamedCommands.registerCommand("leverBras", Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6))));
         NamedCommands.registerCommand("zeroBras", Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35))));

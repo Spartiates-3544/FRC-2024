@@ -167,8 +167,8 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
 
-        // if (LimelightHelpers.getTV("limelight")) {
-        //     addVisionMeasurement(LimelightHelpers.getBotPose2d("limelight"), Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Capture("limelight") / 1000) - (LimelightHelpers.getLatency_Pipeline("limelight") / 1000));
-        // }
+        if (LimelightHelpers.getTV("limelight")) {
+            addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiBlue("limelight"), Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Capture("limelight") / 1000) - (LimelightHelpers.getLatency_Pipeline("limelight") / 1000));
+        }
     }
 }

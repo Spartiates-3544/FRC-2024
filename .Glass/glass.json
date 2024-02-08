@@ -1,0 +1,24 @@
+{
+  "NetworkTables": {
+    "transitory": {
+      "limelight": {
+        "double[]##v_/limelight/botpose_wpiblue": {
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Scheduler": "Scheduler"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT3)",
+    "serverTeam": "3544"
+  }
+}

@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -47,6 +46,7 @@ public class RobotContainer {
     private final JoystickButton moveArm = new JoystickButton(driver, XboxController.Button.kB.value);
     //private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
     private final POVButton toggleIntake = new POVButton(driver, 0);
+    private final POVButton toggleAiming = new POVButton(driver, 180);
 
     private Command pathfind;
     /* Subsystems */
@@ -87,6 +87,7 @@ public class RobotContainer {
         zeroArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35)), arm));
         moveArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
 
+        toggleAiming.toggleOnTrue(new ViserNote(s_Swerve).withTimeout(1));
         toggleIntake.toggleOnTrue(intake.runIntake(0.3));
 
         //move.onTrue(pathfind);

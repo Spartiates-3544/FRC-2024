@@ -92,6 +92,8 @@ public final class Constants {
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
+        public static final double alignkP = 0.05;
+
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
         // public static final class Mod0 { 

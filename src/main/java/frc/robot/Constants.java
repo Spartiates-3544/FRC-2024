@@ -186,4 +186,8 @@ public final class Constants {
         public static final double MotionMagicCruiseVelocity = 5;
         public static final double MotionMagicJerk = 0;
     }
+
+    public static final class ShooterConstants {
+        public static final double kP = 0.5;
+    }
 }

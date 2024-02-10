@@ -82,9 +82,9 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
-        zeroArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35)), arm));
+        zeroArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.44)), arm));
         moveArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
-        spinUpShooter.whileTrue(Commands.run(() -> shooter.setSpeed(0.5), shooter).finallyDo(() -> shooter.setSpeed(0)));
+        spinUpShooter.whileTrue(Commands.run(() -> shooter.setVelocity(120), shooter).finallyDo(() -> shooter.setSpeed(0)));
 
         toggleAiming.toggleOnTrue(new ViserNote(s_Swerve).withTimeout(1));
         toggleIntake.toggleOnTrue(intake.runIntake(0.3));

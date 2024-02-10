@@ -3,8 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import java.io.Console;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,12 +33,11 @@ public class RobotContainer {
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rightTrigger = XboxController.Axis.kRightTrigger.value;
-    private final int leftTrigger = XboxController.Axis.kLeftTrigger.value;
     private final int rotation = XboxController.Axis.kRightX.value;
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton spinUpShooter = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton zeroArm = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton moveArm = new JoystickButton(driver, XboxController.Button.kB.value);
@@ -53,6 +50,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final Arm arm = new Arm();
     private final Intake intake = new Intake();
+    private final Shooter shooter = new Shooter();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -86,6 +84,7 @@ public class RobotContainer {
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
         zeroArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35)), arm));
         moveArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
+        spinUpShooter.whileTrue(Commands.run(() -> shooter.setSpeed(0.5), shooter).finallyDo(() -> shooter.setSpeed(0)));
 
         toggleAiming.toggleOnTrue(new ViserNote(s_Swerve).withTimeout(1));
         toggleIntake.toggleOnTrue(intake.runIntake(0.3));

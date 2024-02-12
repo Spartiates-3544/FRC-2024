@@ -18,7 +18,7 @@ public class Pickup extends Command {
 
     @Override
     public void execute() {
-        if (feeder.getOutputCurrent() >= 13) {
+        if (feeder.getOutputCurrent() >= 14) {
             counter++;
         }
         intake.setSpeed(speed);

@@ -3,6 +3,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import java.util.function.BooleanSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -44,7 +46,10 @@ public class RobotContainer {
     private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
     //private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
     private final POVButton stopAll = new POVButton(driver, 0);
-    private final POVButton toggleAiming = new POVButton(driver, 180);
+    //private final POVButton toggleAiming = new POVButton(driver, 180);
+    
+    private Boolean reverseMode = false;
+    private final POVButton reverseToggle = new POVButton(driver, 180);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -82,14 +87,19 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
+        reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
         // zeroArm.onTrue(Commands.parallel(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.44)), arm), intake.runIntake(-0.3).withTimeout(3)));
         // moveArm.onTrue(Commands.parallel(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm), intake.runIntake(0.3).withTimeout(3)));
         // spinUpShooter.onTrue(Commands.run(() -> shooter.setVelocity(5000), shooter)).onFalse(Commands.runOnce(() -> shooter.setSpeed(0), shooter));
 
         // toggleAiming.toggleOnTrue(new ViserNote(s_Swerve).withTimeout(1));
         // toggleIntake.toggleOnTrue(Commands.parallel(intake.runIntake(0.3), feeder.runFeeder(0.6)));
-        intakeNote.onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.34))).withTimeout(0.5), new Pickup(intake, feeder, 0.3)));
-        
+
+        //Intake
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.34))).withTimeout(0.5), new Pickup(intake, feeder, 0.3)));
+        //Outtake
+        intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.3))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
+
         //WHAT THE HECK??? Too lazy to put this in a separate file
         shoot.onTrue(Commands.parallel(
             Commands.run(() -> shooter.setVelocity(5000), shooter),
@@ -107,10 +117,13 @@ public class RobotContainer {
 
         amp.onTrue(Commands.parallel(
             Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
-            Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.65)), arm),
+            Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.63)), arm),
             Commands.sequence(
                 Commands.waitSeconds(2),  
-                Commands.run(() -> feeder.setSpeed(1), feeder)
+                Commands.parallel(
+                    Commands.run(() -> feeder.setSpeed(1), feeder),
+                    Commands.run(() -> shooter.setSpeed(0.4), shooter)
+                )
                 )
             ).withTimeout(3).finallyDo(() -> {
                 shooter.setSpeed(0);

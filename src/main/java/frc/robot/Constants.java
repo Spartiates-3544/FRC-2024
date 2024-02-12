@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
@@ -188,6 +189,17 @@ public final class Constants {
     }
 
     public static final class ShooterConstants {
-        public static final double kP = 0.5;
+        public static final double kP = 0.8;
+        public static final double kI = 0;
+        public static final double kD = 0;
+
+        public static final double kS = 0.12255;
+        public static final double kV = 0.10991;
+        public static final double kA = 0.0022191;
+
+        public static final int shootCurrentLimit = 35;
+        public static final int shootCurrentThreshold = 60;
+        public static final double shootCurrentThresholdTime = 0.1;
+        public static final boolean shootEnableCurrentLimit = true;
     }
 }

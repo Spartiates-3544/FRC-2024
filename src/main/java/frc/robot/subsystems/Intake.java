@@ -18,6 +18,10 @@ public class Intake extends SubsystemBase  {
         SmartDashboard.putNumber("Intake encoder", intakeMotor.getEncoder().getPosition());
     }
 
+    public void setSpeed(double speed) {
+        intakeMotor.set(speed);
+    }
+
     public Command runIntake(double speed) {
         return this.run(() -> intakeMotor.set(speed)).finallyDo(() -> intakeMotor.stopMotor());
     }

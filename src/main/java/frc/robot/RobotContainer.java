@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -37,20 +38,20 @@ public class RobotContainer {
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton spinUpShooter = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton amp = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton zeroArm = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton moveArm = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton intakeNote = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
     //private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final POVButton toggleIntake = new POVButton(driver, 0);
+    private final POVButton stopAll = new POVButton(driver, 0);
     private final POVButton toggleAiming = new POVButton(driver, 180);
 
-    private Command pathfind;
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Arm arm = new Arm();
     private final Intake intake = new Intake();
     private final Shooter shooter = new Shooter();
+    private final Feeder feeder = new Feeder();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -66,7 +67,6 @@ public class RobotContainer {
         );
 
         SmartDashboard.putData(CommandScheduler.getInstance());
-        pathfind = AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10);
         //arm.setDefaultCommand(Commands.run(() -> arm.pourcentageControl(() -> ((driver.getRawAxis(3) - driver.getRawAxis(2)) * 0.5)), arm));
         // Configure the button bindings
         configureButtonBindings();
@@ -82,15 +82,53 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
-        zeroArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.44)), arm));
-        moveArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm));
-        spinUpShooter.whileTrue(Commands.run(() -> shooter.setVelocity(120), shooter).finallyDo(() -> shooter.setSpeed(0)));
+        // zeroArm.onTrue(Commands.parallel(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.44)), arm), intake.runIntake(-0.3).withTimeout(3)));
+        // moveArm.onTrue(Commands.parallel(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm), intake.runIntake(0.3).withTimeout(3)));
+        // spinUpShooter.onTrue(Commands.run(() -> shooter.setVelocity(5000), shooter)).onFalse(Commands.runOnce(() -> shooter.setSpeed(0), shooter));
 
-        toggleAiming.toggleOnTrue(new ViserNote(s_Swerve).withTimeout(1));
-        toggleIntake.toggleOnTrue(intake.runIntake(0.3));
+        // toggleAiming.toggleOnTrue(new ViserNote(s_Swerve).withTimeout(1));
+        // toggleIntake.toggleOnTrue(Commands.parallel(intake.runIntake(0.3), feeder.runFeeder(0.6)));
+        intakeNote.onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.34))).withTimeout(0.5), new Pickup(intake, feeder, 0.3)));
+        
+        //WHAT THE HECK??? Too lazy to put this in a separate file
+        shoot.onTrue(Commands.parallel(
+            Commands.run(() -> shooter.setVelocity(5000), shooter),
+            Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
+            Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.44)), arm),
+            Commands.sequence(
+                Commands.waitSeconds(3),  
+                Commands.run(() -> feeder.setSpeed(1), feeder)
+                )
+            ).withTimeout(5).finallyDo(() -> {
+                shooter.setSpeed(0);
+                intake.setSpeed(0);
+                feeder.setSpeed(0);
+            }));
 
-        //move.onTrue(pathfind);
+        amp.onTrue(Commands.parallel(
+            Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
+            Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.65)), arm),
+            Commands.sequence(
+                Commands.waitSeconds(2),  
+                Commands.run(() -> feeder.setSpeed(1), feeder)
+                )
+            ).withTimeout(3).finallyDo(() -> {
+                shooter.setSpeed(0);
+                intake.setSpeed(0);
+                feeder.setSpeed(0);
+            }));
+
+        stopAll.onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
+
+        //move.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
+
+        /* SysID Bindings */
+        // zeroArm.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        // moveArm.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        // spinUpShooter.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        // zeroGyro.whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     }
+
     private void registerCommands() {
         NamedCommands.registerCommand("leverBras", Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6))));
         NamedCommands.registerCommand("zeroBras", Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35))));

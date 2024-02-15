@@ -15,7 +15,7 @@ public class ViserNote extends Command{
     private ChassisSpeeds output;
 
     public ViserNote(Swerve swerve) {
-        align = new PIDController(Constants.Swerve.alignkP, 0, 0);
+        align = new PIDController(Constants.Swerve.alignkP, Constants.Swerve.alignkI, 0);
         align.setSetpoint(0);
         align.setTolerance(2);
         output = new ChassisSpeeds();
@@ -25,8 +25,8 @@ public class ViserNote extends Command{
 
     @Override
     public void execute() {
-        if (LimelightHelpers.getTV("limelight")) {
-            output.omegaRadiansPerSecond = align.calculate(LimelightHelpers.getTX("limelight"));
+        if (LimelightHelpers.getTV(Constants.Swerve.drivetrainCameraName)) {
+            output.omegaRadiansPerSecond = align.calculate(LimelightHelpers.getTX(Constants.Swerve.drivetrainCameraName));
             swerve.setChassisSpeeds(output);
         }
 

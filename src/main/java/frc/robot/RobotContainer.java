@@ -46,6 +46,8 @@ public class RobotContainer {
     private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
     //private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
     private final POVButton stopAll = new POVButton(driver, 0);
+    private final POVButton aimNote = new POVButton(driver, 270);
+    private final POVButton moveToAmp = new POVButton(driver, 90);
     //private final POVButton toggleAiming = new POVButton(driver, 180);
     
     private Boolean reverseMode = false;
@@ -131,9 +133,17 @@ public class RobotContainer {
                 feeder.setSpeed(0);
             }));
 
+        aimNote.toggleOnTrue(new ViserNoteDrive(
+                s_Swerve, 
+                () -> -driver.getRawAxis(translationAxis) * 0.5, 
+                () -> -driver.getRawAxis(strafeAxis) * 0.5, 
+                () -> -driver.getRawAxis(rotation) * 0.20, 
+                () -> robotCentric.getAsBoolean()
+            ));
+
         stopAll.onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
 
-        //move.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
+        moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
 
         /* SysID Bindings */
         // zeroArm.whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));

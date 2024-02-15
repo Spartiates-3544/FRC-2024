@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMUConfiguration;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,20 +19,25 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
-    public PigeonIMU gyro;
+    //public PigeonIMU gyro;
+    public AHRS gyro;
     public Field2d field;
     public SwerveDrivePoseEstimator swervePoseEstimator;
 
     public Swerve() {
-        gyro = new PigeonIMU(Constants.Swerve.pigeonID);
-        gyro.configAllSettings(new PigeonIMUConfiguration());
-        gyro.setYaw(0);
+        //gyro = new PigeonIMU(Constants.Swerve.pigeonID);
+        //gyro.configAllSettings(new PigeonIMUConfiguration());
+        gyro = new AHRS(Port.kMXP);
+        //gyro.setYaw(0);
+        gyro.reset();
 
         field = new Field2d();
         SmartDashboard.putData(field);
@@ -146,7 +152,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw());
+        return Rotation2d.fromDegrees(-gyro.getYaw());
     }
 
     public void resetModulesToAbsolute(){
@@ -159,6 +165,7 @@ public class Swerve extends SubsystemBase {
     public void periodic(){
         swervePoseEstimator.update(getGyroYaw(), getModulePositions());
         field.setRobotPose(getPose());
+        SmartDashboard.putNumber("Gyro", -gyro.getYaw());
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
@@ -166,8 +173,8 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
 
-        // if (LimelightHelpers.getTV("limelight")) {
-        //     addVisionMeasurement(LimelightHelpers.getBotPose2d("limelight"), Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Capture("limelight") / 1000) - (LimelightHelpers.getLatency_Pipeline("limelight") / 1000));
-        // }
+        if (LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName)) {
+            addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiBlue(Constants.ArmConstants.armLimelightName), (Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Capture(Constants.ArmConstants.armLimelightName) / 1000) - (LimelightHelpers.getLatency_Pipeline(Constants.ArmConstants.armLimelightName)) / 1000));
+        }
     }
 }

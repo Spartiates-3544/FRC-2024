@@ -94,6 +94,10 @@ public final class Constants {
 
         public static final double alignkP = 0.05;
 
+        public static final String drivetrainCameraName = "limelight-ai";
+
+        public static final double alignkI = 0.0;
+
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
         // public static final class Mod0 { 
@@ -186,6 +190,7 @@ public final class Constants {
         public static final double MotionMagicAcceleration = 5;
         public static final double MotionMagicCruiseVelocity = 5;
         public static final double MotionMagicJerk = 0;
+        public static final String armLimelightName = "limelight";
     }
 
     public static final class ShooterConstants {

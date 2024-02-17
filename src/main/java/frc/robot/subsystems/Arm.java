@@ -64,19 +64,12 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngle(Rotation2d angle) {
-        //MotionMagicVoltage request = new MotionMagicVoltage(0, false, 0, 0, false, true, true);
         MotionMagicDutyCycle request = new MotionMagicDutyCycle(0, false, 0, 0, false, false, false);
         bras1.setControl(request.withPosition(angle.getRotations()));
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("Encodeur bras", (encodeur.getAbsolutePosition().getValue() - Constants.ArmConstants.angleOffset.getRotations()) * 360);
-        SmartDashboard.putNumber("Motor power", bras1.get());
-        SmartDashboard.putNumber("Motor encoder", bras1.getPosition().getValue());
-        // Rotation2d encoderValue = Rotation2d.fromRotations(encodeur.getAbsolutePosition().getValue() - Constants.ArmConstants.angleOffset.getRotations());
-
-        // if (encoderValue.getDegrees() < 0 || encoderValue.getDegrees() > 180) {
-        //     bras1.stopMotor();
-        // }
+        // SmartDashboard.putNumber("Encodeur bras", (encodeur.getAbsolutePosition().getValue() - Constants.ArmConstants.angleOffset.getRotations()) * 360);
+        SmartDashboard.putNumber("Arm rotation", bras1.getPosition().getValueAsDouble());
     }
 }

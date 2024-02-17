@@ -42,12 +42,5 @@ public class TeleopSwerve extends Command {
             !robotCentricSup.getAsBoolean(), 
             true
         );
-
-        // s_Swerve.drive(
-        //     new Translation2d(2, 0), 
-        //     0, 
-        //     true, 
-        //     true
-        // );
     }
 }

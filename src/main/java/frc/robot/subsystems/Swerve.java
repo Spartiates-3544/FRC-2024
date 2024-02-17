@@ -9,8 +9,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMUConfiguration;
+// import com.ctre.phoenix.sensors.PigeonIMU;
+// import com.ctre.phoenix.sensors.PigeonIMUConfiguration;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;

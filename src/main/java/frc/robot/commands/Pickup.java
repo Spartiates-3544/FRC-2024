@@ -8,6 +8,9 @@ public class Pickup extends Command {
     private Intake intake;
     private Feeder feeder;
     private int counter;
+
+    private int reverseCounter = 0;
+
     private double speed;
 
     public Pickup(Intake intake, Feeder feeder, double speed) {
@@ -18,7 +21,7 @@ public class Pickup extends Command {
 
     @Override
     public void execute() {
-        if (feeder.getOutputCurrent() >= 14) {
+        if (feeder.getOutputCurrent() >= 14.5) {
             counter++;
         }
         intake.setSpeed(speed);
@@ -27,11 +30,16 @@ public class Pickup extends Command {
 
     @Override
     public boolean isFinished() {
-        return counter >= 5;
+        return counter >= 3;
     }
 
     @Override
     public void end(boolean interrupted) {
+        while (reverseCounter < 10) {
+            intake.setSpeed(-speed);
+            reverseCounter++;
+        }
+
         intake.setSpeed(0);
         feeder.setSpeed(0);
         counter = 0;

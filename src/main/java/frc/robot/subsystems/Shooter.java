@@ -81,9 +81,6 @@ public class Shooter extends SubsystemBase {
         velocityVoltage.Velocity = (rpm / 60);
         velocityVoltage.FeedForward = feedforward.calculate(rpm / 60);
         shooter1.setControl(velocityVoltage);
-        //double volts = velocityController.calculate((shooter1.getVelocity().getValueAsDouble() * 60), rpm);
-        //setVolts(volts);
-
     }
 
     public void setVolts(double volts) {

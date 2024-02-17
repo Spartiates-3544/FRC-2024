@@ -3,8 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import java.util.function.BooleanSupplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,20 +16,12 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
-    // private final apriltag lime = new apriltag();
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -44,14 +34,13 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton intakeNote = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
-    //private final JoystickButton move = new JoystickButton(driver, XboxController.Button.kA.value);
+
     private final POVButton stopAll = new POVButton(driver, 0);
-    private final POVButton aimNote = new POVButton(driver, 270);
+    private final POVButton reverseToggle = new POVButton(driver, 180);
     private final POVButton moveToAmp = new POVButton(driver, 90);
-    //private final POVButton toggleAiming = new POVButton(driver, 180);
+    private final POVButton aimNote = new POVButton(driver, 270);
     
     private Boolean reverseMode = false;
-    private final POVButton reverseToggle = new POVButton(driver, 180);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -90,12 +79,6 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
         reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
-        // zeroArm.onTrue(Commands.parallel(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.44)), arm), intake.runIntake(-0.3).withTimeout(3)));
-        // moveArm.onTrue(Commands.parallel(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6)), arm), intake.runIntake(0.3).withTimeout(3)));
-        // spinUpShooter.onTrue(Commands.run(() -> shooter.setVelocity(5000), shooter)).onFalse(Commands.runOnce(() -> shooter.setSpeed(0), shooter));
-
-        // toggleAiming.toggleOnTrue(new ViserNote(s_Swerve).withTimeout(1));
-        // toggleIntake.toggleOnTrue(Commands.parallel(intake.runIntake(0.3), feeder.runFeeder(0.6)));
 
         //Intake
         intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.34))).withTimeout(0.5), new Pickup(intake, feeder, 0.3)));
@@ -104,7 +87,7 @@ public class RobotContainer {
 
         //WHAT THE HECK??? Too lazy to put this in a separate file
         shoot.onTrue(Commands.parallel(
-            Commands.run(() -> shooter.setVelocity(5000), shooter),
+            Commands.run(() -> shooter.setVelocity(4000), shooter),
             Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
             Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.44)), arm),
             Commands.sequence(
@@ -124,9 +107,7 @@ public class RobotContainer {
                 Commands.waitSeconds(2),  
                 Commands.parallel(
                     Commands.run(() -> feeder.setSpeed(1), feeder),
-                    Commands.run(() -> shooter.setSpeed(0.4), shooter)
-                )
-                )
+                    Commands.run(() -> shooter.setSpeed(0.4), shooter)))
             ).withTimeout(3).finallyDo(() -> {
                 shooter.setSpeed(0);
                 intake.setSpeed(0);

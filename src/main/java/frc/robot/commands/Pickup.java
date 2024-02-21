@@ -21,7 +21,7 @@ public class Pickup extends Command {
 
     @Override
     public void execute() {
-        if (feeder.getOutputCurrent() >= 14.5) {
+        if (feeder.getOutputCurrent() >= 15) {
             counter++;
         }
         intake.setSpeed(speed);
@@ -30,13 +30,13 @@ public class Pickup extends Command {
 
     @Override
     public boolean isFinished() {
-        return counter >= 3;
+        return counter >= 4;
     }
 
     @Override
     public void end(boolean interrupted) {
         while (reverseCounter < 10) {
-            intake.setSpeed(-speed);
+            feeder.setSpeed(-speed);
             reverseCounter++;
         }
 

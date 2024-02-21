@@ -18,12 +18,23 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
@@ -32,10 +43,16 @@ public class Swerve extends SubsystemBase {
     public Field2d field;
     public SwerveDrivePoseEstimator swervePoseEstimator;
 
+    private SysIdRoutine characterizationRoutine;
+
+    private final MutableMeasure<Voltage> m_appliedVoltage = MutableMeasure.mutable(Units.Volts.of(0));
+    private final MutableMeasure<Distance> m_distance = MutableMeasure.mutable(Units.Meters.of(0));
+    private final MutableMeasure<Velocity<Distance>> m_velocity = MutableMeasure.mutable(Units.MetersPerSecond.of(0));
+
     public Swerve() {
         //gyro = new PigeonIMU(Constants.Swerve.pigeonID);
         //gyro.configAllSettings(new PigeonIMUConfiguration());
-        gyro = new AHRS(Port.kMXP);
+        gyro = new AHRS(SPI.Port.kMXP);
         //gyro.setYaw(0);
         gyro.reset();
 
@@ -69,6 +86,27 @@ public class Swerve extends SubsystemBase {
          this);
 
          PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("traj").setPoses(poses));
+
+        characterizationRoutine = new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism((Measure<Voltage> volts) -> {setVoltage(volts.in(Units.Volts));},
+         (SysIdRoutineLog log) -> {
+            log.motor("front-left")
+            .voltage(m_appliedVoltage.mut_replace(mSwerveMods[0].getDriveVoltage(), Units.Volts))
+            .linearPosition(m_distance.mut_replace(mSwerveMods[0].getPosition().distanceMeters, Units.Meters))
+            .linearVelocity(m_velocity.mut_replace(mSwerveMods[0].getState().speedMetersPerSecond, Units.MetersPerSecond));
+            log.motor("front-right")
+            .voltage(m_appliedVoltage.mut_replace(mSwerveMods[1].getDriveVoltage(), Units.Volts))
+            .linearPosition(m_distance.mut_replace(mSwerveMods[1].getPosition().distanceMeters, Units.Meters))
+            .linearVelocity(m_velocity.mut_replace(mSwerveMods[1].getState().speedMetersPerSecond, Units.MetersPerSecond));
+            log.motor("back-left")
+            .voltage(m_appliedVoltage.mut_replace(mSwerveMods[2].getDriveVoltage(), Units.Volts))
+            .linearPosition(m_distance.mut_replace(mSwerveMods[2].getPosition().distanceMeters, Units.Meters))
+            .linearVelocity(m_velocity.mut_replace(mSwerveMods[2].getState().speedMetersPerSecond, Units.MetersPerSecond));
+            log.motor("back-right")
+            .voltage(m_appliedVoltage.mut_replace(mSwerveMods[3].getDriveVoltage(), Units.Volts))
+            .linearPosition(m_distance.mut_replace(mSwerveMods[3].getPosition().distanceMeters, Units.Meters))
+            .linearVelocity(m_velocity.mut_replace(mSwerveMods[3].getState().speedMetersPerSecond, Units.MetersPerSecond));
+         },
+          this));
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -96,6 +134,19 @@ public class Swerve extends SubsystemBase {
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
         SwerveModuleState[] states = Constants.Swerve.swerveKinematics.toSwerveModuleStates(targetSpeeds);
         setModuleStates(states);
+    }
+
+    public void setVoltage(double volts) {
+        for(SwerveModule swerveModule : mSwerveMods) {
+            swerveModule.setDriveVoltage(volts);
+        }
+    }
+
+    public double getDistanceToSpeaker() {
+        if (LimelightHelpers.getFiducialID("limelight") == 5) {
+           return Math.tan(Constants.ArmConstants.armLimelightAngle) * (Constants.FieldConstants.speakerApriltagHeight - Constants.ArmConstants.armLimelightHeight); 
+        }
+        else return 0;
     }
 
     /* Used by SwerveControllerCommand in Auto */
@@ -159,6 +210,14 @@ public class Swerve extends SubsystemBase {
         for(SwerveModule mod : mSwerveMods){
             mod.resetToAbsolute();
         }
+    }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return characterizationRoutine.quasistatic(direction);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return characterizationRoutine.dynamic(direction);
     }
 
     @Override

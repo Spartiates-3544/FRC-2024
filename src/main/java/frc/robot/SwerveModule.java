@@ -55,6 +55,10 @@ public class SwerveModule {
         setSpeed(desiredState, isOpenLoop);
     }
 
+    public void setAngleAngle(Rotation2d angle) {
+        mAngleMotor.setControl(anglePosition.withPosition(angle.getRotations()));
+    }
+
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
         if(isOpenLoop){
             driveDutyCycle.Output = desiredState.speedMetersPerSecond / Constants.Swerve.maxSpeed;
@@ -88,5 +92,13 @@ public class SwerveModule {
             Conversions.rotationsToMeters(mDriveMotor.getPosition().getValue(), Constants.Swerve.wheelCircumference), 
             Rotation2d.fromRotations(mAngleMotor.getPosition().getValue())
         );
+    }
+
+    public void setDriveVoltage(double volts) {
+        mDriveMotor.setVoltage(volts);
+    }
+
+    public double getDriveVoltage() {
+        return mDriveMotor.getMotorVoltage().getValueAsDouble();
     }
 }

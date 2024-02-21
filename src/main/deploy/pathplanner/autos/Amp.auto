@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2,
-      "y": 2
+      "x": 0.5,
+      "y": 7.42
     },
     "rotation": 0
   },
@@ -12,9 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0
+            "pathName": "Bouger_Amp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "placerAmp"
           }
         }
       ]

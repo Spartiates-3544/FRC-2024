@@ -77,9 +77,12 @@ public final class Constants {
         public static final double driveKF = 0.0;
 
         /* Drive Motor Characterization Values From SYSID */
-        public static final double driveKS = 0.15585;
-        public static final double driveKV = 2.2565;
-        public static final double driveKA = 0.24337;
+        // public static final double driveKS = 0.15585;
+        // public static final double driveKV = 2.2565;
+        // public static final double driveKA = 0.24337;
+        public static final double driveKS = 0.10246;
+        public static final double driveKV = 2.3649;
+        public static final double driveKA = 0.29863;
 
         /* Swerve Profiling Values */
         /** Meters per Second */
@@ -166,7 +169,7 @@ public final class Constants {
     
         public static final double kPXController = 1;
         public static final double kPYController = 1;
-        public static final double kPThetaController = 4;
+        public static final double kPThetaController = 3.9;
 
         public static final PathConstraints constraints = new PathConstraints(3, 3.00, Units.degreesToRadians(540.00), Units.degreesToRadians(720.00));
     
@@ -190,6 +193,9 @@ public final class Constants {
         public static final double MotionMagicCruiseVelocity = 5;
         public static final double MotionMagicJerk = 0;
         public static final String armLimelightName = "limelight";
+        //TODO Both of these
+        public static final double armLimelightAngle = 20;
+        public static final double armLimelightHeight = 1;
     }
 
     public static final class ShooterConstants {
@@ -205,5 +211,9 @@ public final class Constants {
         public static final int shootCurrentThreshold = 60;
         public static final double shootCurrentThresholdTime = 0.1;
         public static final boolean shootEnableCurrentLimit = true;
+    }
+
+    public static final class FieldConstants {
+        public static final double speakerApriltagHeight = 51.875;
     }
 }

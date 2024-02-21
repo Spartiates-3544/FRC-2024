@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,6 +13,7 @@ public class Feeder extends SubsystemBase {
 
     public Feeder() {
         feeder = new CANSparkMax(6, MotorType.kBrushless);
+        feeder.setIdleMode(IdleMode.kBrake);
     }
 
     @Override

@@ -14,11 +14,12 @@ public class Feeder extends SubsystemBase {
     public Feeder() {
         feeder = new CANSparkMax(6, MotorType.kBrushless);
         feeder.setIdleMode(IdleMode.kBrake);
+        feeder.setSmartCurrentLimit(15);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Feeder encoder", feeder.getEncoder().getPosition());
+        //SmartDashboard.putNumber("Feeder encoder", feeder.getEncoder().getPosition());
     }
 
     public void setSpeed(double speed) {

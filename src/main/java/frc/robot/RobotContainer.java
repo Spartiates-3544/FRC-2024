@@ -42,6 +42,7 @@ public class RobotContainer {
     private final JoystickButton intakeForwards = new JoystickButton(coDriver, 6);
     private final JoystickButton intakeBackwards = new JoystickButton(coDriver, 7);
     private final JoystickButton enableArmControl = new JoystickButton(coDriver, 3);
+    private final JoystickButton enableShooter = new JoystickButton(coDriver, 11);
 
     private final POVButton stopAll = new POVButton(driver, 0);
     private final POVButton reverseToggle = new POVButton(driver, 180);
@@ -148,13 +149,9 @@ public class RobotContainer {
         enableArmControl.toggleOnTrue(Commands.run(() -> arm.pourcentageControl(coDriver.getRawAxis(1) * 0.3), arm).finallyDo(() -> arm.setAngle(Rotation2d.fromRotations(0.34))));
 
         //Shooter control
-        enableArmControl.toggleOnTrue(Commands.run(() -> {
+        enableShooter.whileTrue(Commands.run(() -> {
             double axis = 0;
-            if (coDriver.getRawAxis(2) < 0) {
-                axis = 0;
-            } else {
-                axis = coDriver.getRawAxis(2);
-            }
+            axis = -((coDriver.getRawAxis(2) + 1) / 2);
             shooter.setVelocity(axis * Constants.ShooterConstants.shooterMaxRPM);
         }, shooter)
         .finallyDo(() -> shooter.setSpeed(0)));

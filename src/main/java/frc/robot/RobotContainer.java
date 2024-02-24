@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commandgroups.ShootGroup;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -38,7 +38,6 @@ public class RobotContainer {
     private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
 
     /* Copilot Buttons */
-    //TODO C'EST ICI POUR CHANGER LES BOUTONS
     private final JoystickButton intakeForwards = new JoystickButton(coDriver, 6);
     private final JoystickButton intakeBackwards = new JoystickButton(coDriver, 7);
     private final JoystickButton enableArmControl = new JoystickButton(coDriver, 3);
@@ -67,7 +66,7 @@ public class RobotContainer {
                 s_Swerve, 
                 () -> -driver.getRawAxis(translationAxis) * 0.8, 
                 () -> -driver.getRawAxis(strafeAxis) * 0.7, 
-                () -> -(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()) * 0.3, 
+                () -> -driver.getRawAxis(rotation) * 0.3, 
                 () -> robotCentric.getAsBoolean()
             )
         );
@@ -80,6 +79,8 @@ public class RobotContainer {
 
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData(autoChooser);
+
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     /**
@@ -94,24 +95,26 @@ public class RobotContainer {
         reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.34))).withTimeout(0.5), new Pickup2(intake, feeder, shooter, 0.4)));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), new Pickup2(intake, feeder, shooter, 0.4)));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
 
         //WHAT THE HECK??? Too lazy to put this in a separate file
-        shoot.onTrue(Commands.parallel(
-            Commands.run(() -> shooter.setVelocity(3500), shooter),
-            Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
-            Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.42)), arm),
-            Commands.sequence(
-                Commands.waitSeconds(2),  
-                Commands.run(() -> feeder.setSpeed(1), feeder)
-                )
-            ).withTimeout(5).finallyDo(() -> {
-                shooter.setSpeed(0);
-                intake.setSpeed(0);
-                feeder.setSpeed(0);
-            }));
+        // shoot.onTrue(Commands.parallel(
+        //     Commands.run(() -> shooter.setVelocity(4500), shooter),
+        //     new ViserSpeaker(s_Swerve).withTimeout(1),
+        //     Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
+        //     Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.46)), arm),
+        //     Commands.sequence(
+        //         Commands.waitSeconds(2),  
+        //         Commands.run(() -> feeder.setSpeed(1), feeder)
+        //         )
+        //     ).withTimeout(5).finallyDo(() -> {
+        //         shooter.setSpeed(0);
+        //         intake.setSpeed(0);
+        //         feeder.setSpeed(0);
+        //     }));
+        shoot.onTrue(new ShootGroup(s_Swerve, arm, shooter, feeder, intake));
 
         amp.onTrue(Commands.parallel(
             Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
@@ -140,21 +143,12 @@ public class RobotContainer {
         moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
 
         /* Codriver Bindings */
-
-        // TODO CHANGER ICI POUR LA VITESSE DU INTAKE EN OVERRIDE
         intakeForwards.whileTrue(Commands.run(() -> {intake.setSpeed(0.5); feeder.setSpeed(0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
         intakeBackwards.whileTrue(Commands.run(() -> {intake.setSpeed(-0.5); feeder.setSpeed(-0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
-
         //Arm control
-        enableArmControl.toggleOnTrue(Commands.run(() -> arm.pourcentageControl(coDriver.getRawAxis(1) * 0.3), arm).finallyDo(() -> arm.setAngle(Rotation2d.fromRotations(0.34))));
-
+        enableArmControl.toggleOnTrue(Commands.run(() -> arm.pourcentageControl(coDriver.getRawAxis(1) * 0.3), arm).finallyDo(() -> arm.setAngle(Rotation2d.fromRotations(0.39))));
         //Shooter control
-        enableShooter.whileTrue(Commands.run(() -> {
-            double axis = 0;
-            axis = -((coDriver.getRawAxis(2) + 1) / 2);
-            shooter.setVelocity(axis * Constants.ShooterConstants.shooterMaxRPM);
-        }, shooter)
-        .finallyDo(() -> shooter.setSpeed(0)));
+        enableShooter.whileTrue(Commands.run(() -> shooter.setVelocity((coDriver.getRawAxis(2) + 1) / 2 * Constants.ShooterConstants.shooterMaxRPM), shooter).finallyDo(() -> shooter.setSpeed(0)));
 
         /* SysID Bindings */
         // intakeNote.whileTrue(s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kForward).alongWith(Commands.run(() -> {

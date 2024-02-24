@@ -194,8 +194,9 @@ public final class Constants {
         public static final double MotionMagicJerk = 0;
         public static final String armLimelightName = "limelight";
         //TODO Both of these
-        public static final double armLimelightAngle = 20;
-        public static final double armLimelightHeight = 1;
+        // public static final double armLimelightAngle = 33.7820;
+        public static final double armLimelightAngle = 30.572;
+        public static final double armLimelightHeight = 7.125;
     }
 
     public static final class ShooterConstants {
@@ -216,6 +217,6 @@ public final class Constants {
     }
 
     public static final class FieldConstants {
-        public static final double speakerApriltagHeight = 51.875;
+        public static final double speakerApriltagHeight = 49.88;
     }
 }

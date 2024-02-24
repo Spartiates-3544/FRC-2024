@@ -22,6 +22,7 @@ public class Pickup extends Command {
         this.feeder = feeder;
         this.speed = speed;
         filter = LinearFilter.singlePoleIIR(0.1, 0.02);
+        addRequirements(intake, feeder);
     }
 
     @Override

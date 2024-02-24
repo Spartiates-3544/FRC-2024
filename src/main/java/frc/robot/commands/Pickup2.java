@@ -1,5 +1,8 @@
 package frc.robot.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,7 +16,7 @@ public class Pickup2 extends Command {
     private Feeder feeder;
     private Shooter shooter;
     // private int counter;
-    private double pastRpm = 0;
+    private ArrayList<Double> rpmHistory = new ArrayList<Double>(Arrays.asList(0.0, 0.0, 0.0));
     private LinearFilter filter;
     private boolean finished = false;
 
@@ -27,23 +30,26 @@ public class Pickup2 extends Command {
         this.shooter = shooter;
         this.speed = speed;
         filter = LinearFilter.highPass(0.1, 0.02);
+        addRequirements(intake, feeder, shooter);
     }
 
     @Override
     public void execute() {
         double currentRpm = feeder.getVelocity();
-        double deltaRpm = currentRpm - pastRpm;
         double filteredCurrent = filter.calculate(feeder.getOutputCurrent());
 
+        rpmHistory.add((Double) currentRpm);
+        rpmHistory.remove(0);
+        double deltaRpm = rpmHistory.get(2) - rpmHistory.get(0);
+        
         // feeder.getOutputCurrent() > 11.0 && deltaRpm <= -100
-        if (filteredCurrent >= 1.0 && deltaRpm <= -20) {
+        if (filteredCurrent >= 0.8 && deltaRpm <= -200) {
             finished = true;
         } else {
             intake.setVoltage(speed * RobotController.getBatteryVoltage());
             feeder.setVoltage(speed * RobotController.getBatteryVoltage());
             shooter.setVoltage(-0.3 * RobotController.getBatteryVoltage());
         }
-        pastRpm = currentRpm;
         SmartDashboard.putNumber("Filtered current", filteredCurrent);
     }
 
@@ -57,6 +63,7 @@ public class Pickup2 extends Command {
         intake.setSpeed(0);
         feeder.setSpeed(0);
         shooter.setSpeed(0);
+        rpmHistory = new ArrayList<Double>(Arrays.asList(0.0, 0.0, 0.0));
         filter.reset();
         finished = false;
     }

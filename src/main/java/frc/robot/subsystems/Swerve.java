@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
-import frc.lib.math.Conversions;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -142,7 +141,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public double getDistanceToSpeaker() {
-        if (LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 5) {
+        if (LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 4 || LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 7) {
            return (Constants.FieldConstants.speakerApriltagHeight - Constants.ArmConstants.armLimelightHeight) / Math.tan(Math.toRadians(Constants.ArmConstants.armLimelightAngle + LimelightHelpers.getTY(Constants.ArmConstants.armLimelightName)));
         }
         else return 0;
@@ -224,6 +223,7 @@ public class Swerve extends SubsystemBase {
         swervePoseEstimator.update(getGyroYaw(), getModulePositions());
         field.setRobotPose(getPose());
         SmartDashboard.putNumber("Gyro", -gyro.getYaw());
+        SmartDashboard.putNumber("Distance to speaker", getDistanceToSpeaker());
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());

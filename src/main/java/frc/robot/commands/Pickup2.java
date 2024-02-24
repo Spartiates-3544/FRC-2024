@@ -36,7 +36,7 @@ public class Pickup2 extends Command {
         double filteredCurrent = filter.calculate(feeder.getOutputCurrent());
 
         // feeder.getOutputCurrent() > 11.0 && deltaRpm <= -100
-        if (filteredCurrent >= 1.0 && deltaRpm <= -100) {
+        if (filteredCurrent >= 1.0 && deltaRpm <= -20) {
             finished = true;
         } else {
             intake.setVoltage(speed * RobotController.getBatteryVoltage());

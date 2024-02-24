@@ -7,6 +7,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +23,7 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     /* Controllers */
     private final XboxController driver = new XboxController(0);
-    private final CommandJoystick coDriver = new CommandJoystick(1);
+    private final Joystick coDriver = new Joystick(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -35,6 +36,9 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton intakeNote = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
+
+    /* Copilot Buttons */
+    private final JoystickButton intakeForward = new JoystickButton(coDriver, XboxController.Button.kA.value);
 
     private final POVButton stopAll = new POVButton(driver, 0);
     private final POVButton reverseToggle = new POVButton(driver, 180);
@@ -86,7 +90,7 @@ public class RobotContainer {
         reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.345))).withTimeout(0.5), new Pickup2(intake, feeder, shooter, 0.4)));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.34))).withTimeout(0.5), new Pickup2(intake, feeder, shooter, 0.4)));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
 

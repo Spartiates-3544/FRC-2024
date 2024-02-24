@@ -59,8 +59,8 @@ public class Arm extends SubsystemBase {
         encodeur.getConfigurator().apply(encoderConfig);
     }
 
-    public void pourcentageControl(DoubleSupplier percentage) {
-        bras1.set(percentage.getAsDouble());
+    public void pourcentageControl(double percentage) {
+        bras1.set(percentage);
     }
 
     public void setAngle(Rotation2d angle) {

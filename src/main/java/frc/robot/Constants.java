@@ -211,6 +211,8 @@ public final class Constants {
         public static final int shootCurrentThreshold = 60;
         public static final double shootCurrentThresholdTime = 0.1;
         public static final boolean shootEnableCurrentLimit = true;
+
+        public static final double shooterMaxRPM = 5000;
     }
 
     public static final class FieldConstants {

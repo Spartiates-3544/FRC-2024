@@ -38,7 +38,10 @@ public class RobotContainer {
     private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
 
     /* Copilot Buttons */
-    private final JoystickButton intakeForward = new JoystickButton(coDriver, XboxController.Button.kA.value);
+    //TODO C'EST ICI POUR CHANGER LES BOUTONS
+    private final JoystickButton intakeForwards = new JoystickButton(coDriver, 6);
+    private final JoystickButton intakeBackwards = new JoystickButton(coDriver, 7);
+    private final JoystickButton enableArmControl = new JoystickButton(coDriver, 11);
 
     private final POVButton stopAll = new POVButton(driver, 0);
     private final POVButton reverseToggle = new POVButton(driver, 180);
@@ -136,7 +139,16 @@ public class RobotContainer {
         moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
 
         /* Codriver Bindings */
-        
+
+        // TODO CHANGER ICI POUR LA VITESSE DU INTAKE EN OVERRIDE
+        intakeForwards.whileTrue(Commands.run(() -> {intake.setSpeed(0.5); feeder.setSpeed(0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
+        intakeBackwards.whileTrue(Commands.run(() -> {intake.setSpeed(-0.5); feeder.setSpeed(-0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
+
+        //Arm control
+        enableArmControl.toggleOnTrue(Commands.run(() -> arm.pourcentageControl(coDriver.getRawAxis(1) * 0.3), arm).finallyDo(() -> arm.setAngle(Rotation2d.fromRotations(0.34))));
+
+        //Shooter control
+        enableArmControl.toggleOnTrue(Commands.run(() -> shooter.setVelocity(coDriver.getRawAxis(2) * Constants.ShooterConstants.shooterMaxRPM), shooter).finallyDo(() -> shooter.setSpeed(0)));
 
         /* SysID Bindings */
         // intakeNote.whileTrue(s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kForward).alongWith(Commands.run(() -> {

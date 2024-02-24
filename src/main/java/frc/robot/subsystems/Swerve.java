@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
+import frc.lib.math.Conversions;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -18,7 +19,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
@@ -28,7 +28,6 @@ import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -143,8 +142,8 @@ public class Swerve extends SubsystemBase {
     }
 
     public double getDistanceToSpeaker() {
-        if (LimelightHelpers.getFiducialID("limelight") == 5) {
-           return Math.tan(Constants.ArmConstants.armLimelightAngle) * (Constants.FieldConstants.speakerApriltagHeight - Constants.ArmConstants.armLimelightHeight); 
+        if (LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 5) {
+           return (Constants.FieldConstants.speakerApriltagHeight - Constants.ArmConstants.armLimelightHeight) / Math.tan(Math.toRadians(Constants.ArmConstants.armLimelightAngle + LimelightHelpers.getTY(Constants.ArmConstants.armLimelightName)));
         }
         else return 0;
     }

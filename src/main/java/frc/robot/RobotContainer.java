@@ -1,21 +1,19 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.*;
@@ -23,7 +21,8 @@ import frc.robot.subsystems.*;
 
 public class RobotContainer {
     /* Controllers */
-    private final Joystick driver = new Joystick(0);
+    private final XboxController driver = new XboxController(0);
+    private final CommandJoystick coDriver = new CommandJoystick(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -60,7 +59,7 @@ public class RobotContainer {
                 s_Swerve, 
                 () -> -driver.getRawAxis(translationAxis) * 0.8, 
                 () -> -driver.getRawAxis(strafeAxis) * 0.7, 
-                () -> -driver.getRawAxis(rotation) * 0.3, 
+                () -> -(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()) * 0.3, 
                 () -> robotCentric.getAsBoolean()
             )
         );
@@ -82,12 +81,12 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // /* Driver Buttons */
+        /* Driver Buttons */
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
         reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.34))).withTimeout(0.5), new Pickup(intake, feeder, 0.5)));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.345))).withTimeout(0.5), new Pickup2(intake, feeder, shooter, 0.4)));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
 
@@ -131,6 +130,9 @@ public class RobotContainer {
         stopAll.onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
 
         moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
+
+        /* Codriver Bindings */
+        
 
         /* SysID Bindings */
         // intakeNote.whileTrue(s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kForward).alongWith(Commands.run(() -> {

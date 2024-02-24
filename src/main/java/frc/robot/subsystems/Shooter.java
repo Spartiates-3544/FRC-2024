@@ -83,8 +83,8 @@ public class Shooter extends SubsystemBase {
         shooter1.setControl(velocityVoltage);
     }
 
-    public void setVolts(double volts) {
-        shooter1.setVoltage(volts);
+    public void setVoltage(double voltage) {
+        shooter1.setVoltage(voltage);
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

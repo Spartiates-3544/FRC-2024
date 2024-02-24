@@ -20,14 +20,24 @@ public class Feeder extends SubsystemBase {
     @Override
     public void periodic() {
         //SmartDashboard.putNumber("Feeder encoder", feeder.getEncoder().getPosition());
+        SmartDashboard.putNumber("Feeder current", feeder.getOutputCurrent());
+        SmartDashboard.putNumber("Feeder rpm", feeder.getEncoder().getVelocity());
     }
 
     public void setSpeed(double speed) {
         feeder.set(speed);
     }
 
+    public void setVoltage(double voltage) {
+        feeder.setVoltage(voltage);
+    }
+
     public double getOutputCurrent() {
         return feeder.getOutputCurrent();
+    }
+
+    public double getVelocity() {
+        return feeder.getEncoder().getVelocity();
     }
 
     public Command runFeeder(double speed) {

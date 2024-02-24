@@ -13,7 +13,7 @@ public class Pickup extends Command {
     private LinearFilter filter;
     private boolean finished = false;
 
-    private int reverseCounter = 0;
+    // private int reverseCounter = 0;
 
     private double speed;
 
@@ -39,17 +39,17 @@ public class Pickup extends Command {
         //     finished = true;
         // }
 
-        if (outputCurrent >= 13.25) {
+        if (outputCurrent >= 20) {
             counter++;
         }
 
         if (counter <= 3) {
-            intake.setSpeed(speed);
-            feeder.setSpeed(speed);
-        } else if (reverseCounter <= 18) {
-            intake.setSpeed(-speed);
-            feeder.setSpeed(-speed);
-            reverseCounter++;
+            intake.setSpeed(0.4);
+            feeder.setSpeed(0.3);
+        // } else if (reverseCounter <= 18) {
+        //     intake.setSpeed(-speed);
+        //     feeder.setSpeed(-speed);
+        //     reverseCounter++;
         } else {
             intake.setSpeed(0);
             feeder.setSpeed(0);
@@ -70,7 +70,7 @@ public class Pickup extends Command {
         intake.setSpeed(0);
         feeder.setSpeed(0);
         counter = 0;
-        reverseCounter = 0;
+        // reverseCounter = 0;
         finished = false;
         filter.reset();
     }

@@ -22,6 +22,10 @@ public class Intake extends SubsystemBase  {
         intakeMotor.set(speed);
     }
 
+    public void setVoltage(double voltage) {
+        intakeMotor.setVoltage(voltage);
+    }
+
     public Command runIntake(double speed) {
         return this.run(() -> intakeMotor.set(speed)).finallyDo(() -> intakeMotor.stopMotor());
     }

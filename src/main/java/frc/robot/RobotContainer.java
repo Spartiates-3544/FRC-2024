@@ -41,7 +41,7 @@ public class RobotContainer {
     //TODO C'EST ICI POUR CHANGER LES BOUTONS
     private final JoystickButton intakeForwards = new JoystickButton(coDriver, 6);
     private final JoystickButton intakeBackwards = new JoystickButton(coDriver, 7);
-    private final JoystickButton enableArmControl = new JoystickButton(coDriver, 11);
+    private final JoystickButton enableArmControl = new JoystickButton(coDriver, 3);
 
     private final POVButton stopAll = new POVButton(driver, 0);
     private final POVButton reverseToggle = new POVButton(driver, 180);
@@ -148,7 +148,16 @@ public class RobotContainer {
         enableArmControl.toggleOnTrue(Commands.run(() -> arm.pourcentageControl(coDriver.getRawAxis(1) * 0.3), arm).finallyDo(() -> arm.setAngle(Rotation2d.fromRotations(0.34))));
 
         //Shooter control
-        enableArmControl.toggleOnTrue(Commands.run(() -> shooter.setVelocity(coDriver.getRawAxis(2) * Constants.ShooterConstants.shooterMaxRPM), shooter).finallyDo(() -> shooter.setSpeed(0)));
+        enableArmControl.toggleOnTrue(Commands.run(() -> {
+            double axis = 0;
+            if (coDriver.getRawAxis(2) < 0) {
+                axis = 0;
+            } else {
+                axis = coDriver.getRawAxis(2);
+            }
+            shooter.setVelocity(axis * Constants.ShooterConstants.shooterMaxRPM);
+        }, shooter)
+        .finallyDo(() -> shooter.setSpeed(0)));
 
         /* SysID Bindings */
         // intakeNote.whileTrue(s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kForward).alongWith(Commands.run(() -> {

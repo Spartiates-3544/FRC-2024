@@ -39,6 +39,7 @@ public class Swerve extends SubsystemBase {
     //public PigeonIMU gyro;
     public AHRS gyro;
     public Field2d field;
+    private double maxOutput = 0.6;
     public SwerveDrivePoseEstimator swervePoseEstimator;
 
     private SysIdRoutine characterizationRoutine;
@@ -198,6 +199,14 @@ public class Swerve extends SubsystemBase {
 
     public void zeroHeading(){
         swervePoseEstimator.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+    }
+
+    public void setMaxOutput(double maxOutput) {
+        this.maxOutput = maxOutput;
+    }
+
+    public double getMaxOutput() {
+        return maxOutput;
     }
 
     public Rotation2d getGyroYaw() {

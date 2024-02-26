@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
@@ -57,8 +56,8 @@ public class Pickup extends Command {
             finished = true;
         }
 
-        SmartDashboard.putNumber("Feeder filter current", outputCurrent);
-        SmartDashboard.putNumber("Feeder current", feeder.getOutputCurrent());
+        // SmartDashboard.putNumber("Feeder filter current", outputCurrent);
+        // SmartDashboard.putNumber("Feeder current", feeder.getOutputCurrent());
     }
 
     @Override

@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.LimelightHelpers;
@@ -17,7 +16,7 @@ public class ViserSpeaker extends Command{
     public ViserSpeaker(Swerve swerve) {
         align = new PIDController(Constants.Swerve.alignkP, Constants.Swerve.alignkI, 0);
         align.setSetpoint(0);
-        align.setTolerance(2);
+        align.setTolerance(1);
         output = new ChassisSpeeds();
         this.swerve = swerve;
         addRequirements(swerve);

@@ -16,14 +16,14 @@ public class ShootGroup extends SequentialCommandGroup {
         addCommands(
             Commands.parallel(
                 new SetArmAngle(arm, swerve),
-                new ViserSpeaker(swerve),
-                Commands.run(() -> shooter.setVelocity(4000), shooter).withTimeout(1),
+                new ViserSpeaker(swerve).withTimeout(1),
+                Commands.run(() -> shooter.setVelocity(4700), shooter).withTimeout(1),
                 Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0))
             ),
             Commands.sequence(
-                Commands.waitSeconds(2),  
-                Commands.run(() -> feeder.setSpeed(1), feeder))
-            .withTimeout(3).finallyDo(() -> {
+                Commands.waitSeconds(1),  
+                Commands.run(() -> feeder.setSpeed(1), feeder).withTimeout(1))
+            .finallyDo(() -> {
                 shooter.setSpeed(0);
                 intake.setSpeed(0);
                 feeder.setSpeed(0);

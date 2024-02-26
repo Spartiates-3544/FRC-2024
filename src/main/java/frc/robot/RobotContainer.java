@@ -16,11 +16,19 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commandgroups.ShootGroup;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
 public class RobotContainer {
+    /* Subsystems */
+    private final Swerve s_Swerve = new Swerve();
+    private final Arm arm = new Arm();
+    private final Intake intake = new Intake();
+    private final Shooter shooter = new Shooter();
+    private final Feeder feeder = new Feeder();
+
     /* Controllers */
     private final XboxController driver = new XboxController(0);
     private final Joystick coDriver = new Joystick(1);
@@ -33,9 +41,9 @@ public class RobotContainer {
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton amp = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton intakeNote = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
+    // private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final Trigger intakeNote = new Trigger(() -> driver.getRightTriggerAxis() >= 0.3);
+    private final Trigger shoot = new Trigger(() -> driver.getLeftTriggerAxis() >= 0.3);
 
     /* Copilot Buttons */
     private final JoystickButton intakeForwards = new JoystickButton(coDriver, 6);
@@ -46,33 +54,24 @@ public class RobotContainer {
     private final POVButton stopAll = new POVButton(driver, 0);
     private final POVButton reverseToggle = new POVButton(driver, 180);
     private final POVButton moveToAmp = new POVButton(driver, 90);
-    private final POVButton aimNote = new POVButton(driver, 270);
+    private final JoystickButton aimNote = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     
     private Boolean reverseMode = false;
+    private Boolean robotCentric = false;
     private SendableChooser<Command> autoChooser;
 
-    /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
-    private final Arm arm = new Arm();
-    private final Intake intake = new Intake();
-    private final Shooter shooter = new Shooter();
-    private final Feeder feeder = new Feeder();
-
-
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis) * 0.8, 
-                () -> -driver.getRawAxis(strafeAxis) * 0.7, 
+                () -> -driver.getRawAxis(translationAxis) * s_Swerve.getMaxOutput(), 
+                () -> -driver.getRawAxis(strafeAxis) * s_Swerve.getMaxOutput(), 
                 () -> -driver.getRawAxis(rotation) * 0.3, 
-                () -> robotCentric.getAsBoolean()
+                () -> robotCentric
             )
         );
 
         SmartDashboard.putData(CommandScheduler.getInstance());
-        //arm.setDefaultCommand(Commands.run(() -> arm.pourcentageControl(() -> ((driver.getRawAxis(3) - driver.getRawAxis(2)) * 0.5)), arm));
         // Configure the button bindings
         configureButtonBindings();
         registerCommands();
@@ -95,7 +94,7 @@ public class RobotContainer {
         reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), new Pickup2(intake, feeder, shooter, 0.4)));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(0.5)), new Pickup2(intake, feeder, shooter, 0.5).finallyDo(() -> {s_Swerve.setMaxOutput(0.6);})));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
 
@@ -104,10 +103,10 @@ public class RobotContainer {
         //     Commands.run(() -> shooter.setVelocity(4500), shooter),
         //     new ViserSpeaker(s_Swerve).withTimeout(1),
         //     Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
-        //     Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.46)), arm),
+        //     Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.47)), arm),
         //     Commands.sequence(
         //         Commands.waitSeconds(2),  
-        //         Commands.run(() -> feeder.setSpeed(1), feeder)
+        //         Commands.run(() -> feeder.setSpeed(0.7), feeder)
         //         )
         //     ).withTimeout(5).finallyDo(() -> {
         //         shooter.setSpeed(0);
@@ -132,13 +131,13 @@ public class RobotContainer {
 
         aimNote.toggleOnTrue(new ViserNoteDrive(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis) * 0.5, 
-                () -> -driver.getRawAxis(strafeAxis) * 0.5, 
+                () -> -driver.getRawAxis(translationAxis) * 0.75, 
+                () -> -driver.getRawAxis(strafeAxis) * 0.75, 
                 () -> -driver.getRawAxis(rotation) * 0.20, 
-                () -> robotCentric.getAsBoolean()
+                () -> robotCentric
             ));
 
-        stopAll.onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
+        stopAll.onTrue(Commands.parallel(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()), Commands.runOnce(() -> shooter.setSpeed(0), shooter)));
 
         moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
 
@@ -191,19 +190,13 @@ public class RobotContainer {
                 intake.setSpeed(0);
                 feeder.setSpeed(0);
             }));
-        // NamedCommands.registerCommand("leverBras", Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.6))));
-        // NamedCommands.registerCommand("zeroBras", Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.35))));
+
+        NamedCommands.registerCommand("intake", new Pickup2(intake, feeder, shooter, 0.6));
+        NamedCommands.registerCommand("shoot", new ShootGroup(s_Swerve, arm, shooter, feeder, intake));
+        NamedCommands.registerCommand("moveArmToIntake", Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38)), arm).withTimeout(0.5));
     }
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        //return new exampleAuto(s_Swerve);
-        //return new PathPlannerAuto("test2");
         return autoChooser.getSelected();
     }
 }

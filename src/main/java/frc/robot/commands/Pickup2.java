@@ -57,7 +57,7 @@ public class Pickup2 extends Command {
         deltaRpm = rpmHistory.get(2) - rpmHistory.get(0);
         
         if (intake.isSensorConnected()) {
-            if (filteredCurrent >= 50) {
+            if (filteredProximity >= 80) {
                 sensorDetected = true;
             } else {
                 intake.setVoltage(speed * RobotController.getBatteryVoltage());
@@ -69,7 +69,7 @@ public class Pickup2 extends Command {
                 counter++;
             }
 
-            if (counter >= 5) {
+            if (counter >= 8) {
                 finished = true;
             }
         } else {
@@ -81,11 +81,6 @@ public class Pickup2 extends Command {
                 shooter.setVoltage(-0.3 * RobotController.getBatteryVoltage());
             }
         }
-
-
-
-        // feeder.getOutputCurrent() > 11.0 && deltaRpm <= -100
-
     }
 
     @Override

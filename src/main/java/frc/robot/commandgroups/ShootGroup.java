@@ -3,6 +3,7 @@ package frc.robot.commandgroups;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.SetArmAngle;
+import frc.robot.commands.SetShooterSpeed;
 import frc.robot.commands.ViserSpeaker;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Feeder;
@@ -17,7 +18,7 @@ public class ShootGroup extends SequentialCommandGroup {
             Commands.parallel(
                 new SetArmAngle(arm, swerve),
                 new ViserSpeaker(swerve).withTimeout(1),
-                Commands.run(() -> shooter.setVelocity(4700), shooter).withTimeout(1),
+                new SetShooterSpeed(swerve, shooter),
                 Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0))
             ),
             Commands.sequence(

@@ -41,13 +41,13 @@ public class Arm extends SubsystemBase {
         motorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.35;
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.84;
-        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         motorConfig.Slot0.kP = Constants.ArmConstants.kP;
         motorConfig.MotionMagic.MotionMagicAcceleration = Constants.ArmConstants.MotionMagicAcceleration;
         motorConfig.MotionMagic.MotionMagicCruiseVelocity = Constants.ArmConstants.MotionMagicCruiseVelocity;
         motorConfig.MotionMagic.MotionMagicJerk = Constants.ArmConstants.MotionMagicJerk;
         bras1.getConfigurator().apply(motorConfig);
-        bras2.setNeutralMode(NeutralModeValue.Coast);
+        bras2.setNeutralMode(NeutralModeValue.Brake);
         // bras2.getConfigurator().apply(motorConfig);
     }
 
@@ -68,6 +68,6 @@ public class Arm extends SubsystemBase {
 
     public void periodic() {
         // SmartDashboard.putNumber("Encodeur bras", (encodeur.getAbsolutePosition().getValue() - Constants.ArmConstants.angleOffset.getRotations()) * 360);
-        // SmartDashboard.putNumber("Arm rotation", (bras1.getPosition().getValueAsDouble() * 360) - 124.8046);
+        SmartDashboard.putNumber("Arm rotation", (bras1.getPosition().getValueAsDouble() * 360) - 124.8046);
     }
 }

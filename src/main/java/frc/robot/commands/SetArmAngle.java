@@ -21,15 +21,10 @@ public class SetArmAngle extends Command{
     @Override
     public void execute() {
         double d = swerve.getDistanceToSpeaker();
-        // if (d <= 80) {
-        //     angleRot = (1E-06 * Math.pow(d, 3)) - (0.0002 * Math.pow(d, 2)) + (0.0142 * d) + 0.1393;
-        // } else {
-        //     angleRot = ((-1E-05) * Math.pow(d, 2)) + (0.0022 * d) + 0.3550;
-        // }
+        // double angleRot = (0.0497 * Math.log(d)) + 0.2404;
+        double angleDeg = (8E-06 * Math.pow(d, 3)) - (0.0042 * Math.pow(d, 2)) + (0.7244 * d) + 6.2373;
+        double angleRot = (angleDeg + 124.8046) / 360;
 
-        //double angleRot = ((-1E-05) * Math.pow(d, 2)) + (0.0022 * d) + 0.3550;
-        double angleRot = (0.0497 * Math.log(d)) + 0.2404;
-        // double angleDeg = (3E-06 * Math.pow(d, 3)) - (0.0015 * Math.pow(d, 2)) + (0.2941 * d) + (176.6186 - 34.7976);
         if (angleRot <= 0.6 && angleRot >= 0.4) {
             arm.setAngle(Rotation2d.fromRotations(angleRot));
             // arm.setAngle(Rotation2d.fromDegrees(angleDeg));

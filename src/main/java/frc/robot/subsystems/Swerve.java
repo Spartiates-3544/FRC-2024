@@ -27,6 +27,8 @@ import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -41,6 +43,7 @@ public class Swerve extends SubsystemBase {
     public Field2d field;
     private double maxOutput = 0.6;
     public SwerveDrivePoseEstimator swervePoseEstimator;
+    public Spark blinkin;
 
     private SysIdRoutine characterizationRoutine;
 
@@ -57,6 +60,8 @@ public class Swerve extends SubsystemBase {
 
         field = new Field2d();
         SmartDashboard.putData(field);
+
+        blinkin = new Spark(0);
 
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -109,19 +114,30 @@ public class Swerve extends SubsystemBase {
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-        SwerveModuleState[] swerveModuleStates =
-            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
-                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                    translation.getX(), 
-                                    translation.getY(), 
-                                    rotation, 
-                                    getHeading()
-                                )
-                                : new ChassisSpeeds(
-                                    translation.getX(), 
-                                    translation.getY(), 
-                                    rotation)
-                                );
+        // SwerveModuleState[] swerveModuleStates =
+        //     Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+        //         fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+        //                             translation.getX(), 
+        //                             translation.getY(), 
+        //                             rotation, 
+        //                             getHeading()
+        //                         )
+        //                         : new ChassisSpeeds(
+        //                             translation.getX(), 
+        //                             translation.getY(), 
+        //                             rotation)
+        //                         );
+        SwerveModuleState[] swerveModuleStates;
+
+        if (fieldRelative && DriverStation.getAlliance().get() == Alliance.Red) {
+            swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+                ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(getHeading().getDegrees() + 180)));
+        } else if (fieldRelative && DriverStation.getAlliance().get() == Alliance.Blue) {
+            swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+                ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, getHeading()));
+        } else {
+            swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
+        }
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
         for(SwerveModule mod : mSwerveMods){
@@ -139,6 +155,10 @@ public class Swerve extends SubsystemBase {
         for(SwerveModule swerveModule : mSwerveMods) {
             swerveModule.setDriveVoltage(volts);
         }
+    }
+
+    public void setLedColor(double colorCode) {
+        blinkin.set(colorCode);
     }
 
     public double getDistanceToSpeaker() {
@@ -243,5 +263,7 @@ public class Swerve extends SubsystemBase {
         if (LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName)) {
             addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiBlue(Constants.ArmConstants.armLimelightName), (Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Capture(Constants.ArmConstants.armLimelightName) / 1000) - (LimelightHelpers.getLatency_Pipeline(Constants.ArmConstants.armLimelightName)) / 1000));
         }
+
+        setLedColor(0.57);
     }
 }

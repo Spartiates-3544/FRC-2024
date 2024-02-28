@@ -94,7 +94,7 @@ public class RobotContainer {
         reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(0.5)), new Pickup2(intake, feeder, shooter, 0.5).finallyDo(() -> {s_Swerve.setMaxOutput(0.6);})));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(0.5)), new Pickup2(intake, feeder, shooter, 0.4).finallyDo(() -> {s_Swerve.setMaxOutput(0.6);})));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
 
@@ -191,7 +191,7 @@ public class RobotContainer {
                 feeder.setSpeed(0);
             }));
 
-        NamedCommands.registerCommand("intake", new Pickup2(intake, feeder, shooter, 0.6));
+        NamedCommands.registerCommand("intake", new Pickup2(intake, feeder, shooter, 0.4));
         NamedCommands.registerCommand("shoot", new ShootGroup(s_Swerve, arm, shooter, feeder, intake));
         NamedCommands.registerCommand("moveArmToIntake", Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38)), arm).withTimeout(0.5));
     }

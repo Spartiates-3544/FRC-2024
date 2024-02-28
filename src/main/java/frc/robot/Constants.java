@@ -188,7 +188,7 @@ public final class Constants {
     public static final class ArmConstants {
         public static final Rotation2d angleOffset = Rotation2d.fromDegrees(124.27);
         public static final SensorDirectionValue cancoderInvert = SensorDirectionValue.Clockwise_Positive;
-        public static final double kP = 10;
+        public static final double kP = 19;
         public static final double MotionMagicAcceleration = 5;
         public static final double MotionMagicCruiseVelocity = 5;
         public static final double MotionMagicJerk = 0;

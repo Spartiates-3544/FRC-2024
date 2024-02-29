@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.98,
-        "y": 7.85
+        "x": 2.076305413872089,
+        "y": 6.508271034560088
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9346939692452838,
-        "y": 7.8813929953109545
+        "x": 2.076305413872089,
+        "y": 6.508271034560088
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shoot2mid"
     },
     {
       "anchor": {
-        "x": 2.42,
-        "y": 6.991369417831561
+        "x": 2.760413448754825,
+        "y": 6.563739253604634
       },
       "prevControl": {
-        "x": 1.42,
-        "y": 6.991369417831561
+        "x": 2.760413448754825,
+        "y": 6.563739253604634
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,21 +32,21 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 6.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 35.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "test",
+  "folder": "top",
   "previewStartingState": {
-    "rotation": -89.75984987358056,
+    "rotation": 35.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

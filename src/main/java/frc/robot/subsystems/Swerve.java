@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
 import frc.robot.Constants;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -62,7 +61,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putData(field);
 
         blinkin = new Spark(0);
-
+        setLedColor(0.93);
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.Swerve.Mod0.constants),
             new SwerveModule(1, Constants.Swerve.Mod1.constants),
@@ -260,10 +259,8 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
 
-        if (LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName)) {
+        if (LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName) && !DriverStation.isAutonomous()) {
             addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiBlue(Constants.ArmConstants.armLimelightName), (Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Capture(Constants.ArmConstants.armLimelightName) / 1000) - (LimelightHelpers.getLatency_Pipeline(Constants.ArmConstants.armLimelightName)) / 1000));
         }
-
-        setLedColor(0.57);
     }
 }

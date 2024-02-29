@@ -39,7 +39,7 @@ public class Arm extends SubsystemBase {
         motorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         motorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.35;
+        motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.37;
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.84;
         motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         motorConfig.Slot0.kP = Constants.ArmConstants.kP;

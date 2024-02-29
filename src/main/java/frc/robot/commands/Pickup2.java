@@ -3,8 +3,6 @@ package frc.robot.commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.sound.sampled.Line;
-
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,11 +10,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Swerve;
 
 public class Pickup2 extends Command {
     private Intake intake;
     private Feeder feeder;
     private Shooter shooter;
+    private Swerve swerve;
     private int counter;
     private ArrayList<Double> rpmHistory = new ArrayList<Double>(Arrays.asList(0.0, 0.0, 0.0));
     private LinearFilter rpmFilter;
@@ -27,22 +27,29 @@ public class Pickup2 extends Command {
     private double filteredCurrent = 0;
     private double filteredProximity = 0;
     private double deltaRpm = 0;
-    private double currentProximity = 0;
 
     // private int reverseCounter = 0;
 
     private double speed;
 
-    public Pickup2(Intake intake, Feeder feeder, Shooter shooter, double speed) {
+    public Pickup2(Intake intake, Feeder feeder, Shooter shooter, Swerve swerve, double speed) {
         this.intake = intake;
         this.feeder = feeder;
         this.shooter = shooter;
         this.speed = speed;
+        this.swerve = swerve;
         rpmFilter = LinearFilter.highPass(0.1, 0.02);
         sensorFilter = LinearFilter.highPass(0.1, 0.02);
         addRequirements(intake, feeder, shooter);
+
     }
 
+    @Override
+    public void initialize() {
+        swerve.setLedColor(0.93);
+        // swerve.setLedColor(0.83); //Green-Yellow
+        // setLedColor(0.87); green
+    }
     @Override
     public void execute() {
         currentRpm = feeder.getVelocity();
@@ -66,10 +73,11 @@ public class Pickup2 extends Command {
             }
         
             if (sensorDetected) {
+                swerve.setLedColor(0.87);
                 counter++;
             }
 
-            if (counter >= 8) {
+            if (counter >= 9) {
                 finished = true;
             }
         } else {

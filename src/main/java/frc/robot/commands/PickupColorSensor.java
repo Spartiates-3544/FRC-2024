@@ -1,9 +1,5 @@
 package frc.robot.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;

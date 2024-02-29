@@ -16,9 +16,9 @@ public class SetShooterSpeed extends Command {
     @Override
     public void execute() {
         if (swerve.getDistanceToSpeaker() <= 124) {
-            shooter.setVelocity(4800);
+            shooter.setVelocity(4450);
         } else {
-            shooter.setVelocity(5500);
+            shooter.setVelocity(4450);
         }
     }
 

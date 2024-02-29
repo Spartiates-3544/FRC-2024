@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5,
-      "y": 7.42
+      "x": 1.3274844567707151,
+      "y": 5.565311310802802
     },
     "rotation": 0
   },
@@ -12,21 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Bouger_Shooter"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "moveArmToIntake"
           }
         },
         {
@@ -36,7 +24,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Pickup note millieu"
+                  "pathName": "shootcoller"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "moveArmToIntake"
                 }
               },
               {
@@ -46,6 +40,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Mid note to speaker"
           }
         },
         {

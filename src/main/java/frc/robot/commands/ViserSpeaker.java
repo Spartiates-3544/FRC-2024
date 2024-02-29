@@ -16,7 +16,7 @@ public class ViserSpeaker extends Command{
     public ViserSpeaker(Swerve swerve) {
         align = new PIDController(Constants.Swerve.alignkP, Constants.Swerve.alignkI, 0);
         align.setSetpoint(0);
-        align.setTolerance(1);
+        align.setTolerance(0.25);
         output = new ChassisSpeeds();
         this.swerve = swerve;
         addRequirements(swerve);

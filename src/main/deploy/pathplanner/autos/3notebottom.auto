@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.5,
-      "y": 7.42
+      "x": 0.5395309155887171,
+      "y": 4.1944225677200535
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bouger_Shooter"
+            "pathName": "bottomcloseshoot"
           }
         },
         {
@@ -24,19 +24,13 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "moveArmToIntake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Pickup note millieu"
+                  "pathName": "pickupbottom2note"
                 }
               },
               {
@@ -52,6 +46,43 @@
           "type": "named",
           "data": {
             "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "pickup3bottom"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shoot3bottom"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "sort ligne"
           }
         }
       ]

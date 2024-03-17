@@ -20,13 +20,13 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "spinUpShooter"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "moveArmToIntake"
+            "name": "shoot"
           }
         },
         {
@@ -42,10 +42,22 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "moveArmToIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "intake"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "spinUpShooter"
           }
         },
         {

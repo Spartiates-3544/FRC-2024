@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 1.3274844567707151,
-      "y": 5.565311310802802
+      "y": 5.546821904454621
     },
     "rotation": 0
   },
@@ -11,6 +11,12 @@
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "spinUpShooter"
+          }
+        },
         {
           "type": "named",
           "data": {
@@ -22,12 +28,6 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "shootcoller"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "moveArmToIntake"
@@ -38,8 +38,20 @@
                 "data": {
                   "name": "intake"
                 }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "shootcoller"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "spinUpShooter"
           }
         },
         {
@@ -52,6 +64,12 @@
           "type": "named",
           "data": {
             "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "sortie mid"
           }
         }
       ]

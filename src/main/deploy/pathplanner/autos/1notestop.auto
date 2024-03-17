@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3644632694670795,
-      "y": 5.546821904454621
+      "x": 0.4584823584061582,
+      "y": 7.4234966487950995
     },
     "rotation": 0
   },
@@ -18,34 +18,21 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "shoottop"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shoot"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "moveArmToIntake"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "shootcoller"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
-              }
-            ]
+            "pathName": "out at the end"
           }
         }
       ]

@@ -53,12 +53,14 @@ public class RobotContainer {
     private final JoystickButton aimNote = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Copilot Buttons */
-    private final JoystickButton intakeForwards = new JoystickButton(coDriver, 10);
-    private final JoystickButton intakeBackwards = new JoystickButton(coDriver, 11);
+    private final JoystickButton intakeForwards = new JoystickButton(coDriver, 11);
+    private final JoystickButton intakeBackwards = new JoystickButton(coDriver, 10);
     private final JoystickButton enableArmControl = new JoystickButton(coDriver, 3);
-    private final JoystickButton enableShooter = new JoystickButton(coDriver, 11);
+    private final JoystickButton enableShooter = new JoystickButton(coDriver, 1);
     private final JoystickButton lowerArm = new JoystickButton(coDriver, 4);
     private final JoystickButton ampArm = new JoystickButton(coDriver, 5);
+
+    private final JoystickButton spinUpShooter = new JoystickButton(coDriver, 2);
     
     private Boolean reverseMode = false;
     private Boolean robotCentric = false;
@@ -72,7 +74,7 @@ public class RobotContainer {
                 s_Swerve, 
                 () -> -driver.getRawAxis(translationAxis) * s_Swerve.getMaxOutput(), 
                 () -> -driver.getRawAxis(strafeAxis) * s_Swerve.getMaxOutput(), 
-                () -> -driver.getRawAxis(rotation) * 0.3, 
+                () -> -driver.getRawAxis(rotation) * 0.35, 
                 () -> robotCentric
             )
         );
@@ -103,7 +105,7 @@ public class RobotContainer {
         reverseModeTrigger.onFalse(Commands.runOnce(() -> s_Swerve.setLedColor(0.93)));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(0.5)), new Pickup2(intake, feeder, shooter, s_Swerve, 0.4).finallyDo(() -> {s_Swerve.setMaxOutput(0.75);})));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(0.5)), new Pickup2(intake, feeder, shooter, s_Swerve, 0.4).finallyDo(() -> {s_Swerve.setMaxOutput(0.90);})));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
 
@@ -163,6 +165,8 @@ public class RobotContainer {
         lowerArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.38)), arm));
         ampArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.63)), arm));
 
+        spinUpShooter.toggleOnTrue(Commands.run(() -> shooter.setVelocity(3500), shooter).finallyDo(() -> shooter.setSpeed(0)));
+
         /* SysID Bindings */
         // intakeNote.whileTrue(s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kForward).alongWith(Commands.run(() -> {
         //     s_Swerve.mSwerveMods[0].setAngleAngle(Rotation2d.fromDegrees(0));
@@ -205,7 +209,7 @@ public class RobotContainer {
                 feeder.setSpeed(0);
             }));
 
-        NamedCommands.registerCommand("intake", new Pickup2(intake, feeder, shooter, s_Swerve, 0.4));
+        NamedCommands.registerCommand("intake", new Pickup2(intake, feeder, shooter, s_Swerve, 0.35));
         NamedCommands.registerCommand("shoot", new ShootGroup_Auto(s_Swerve, arm, feeder, intake));
         NamedCommands.registerCommand("spinUpShooter", Commands.runOnce(() -> shooter.setVelocity(4450), shooter));
         NamedCommands.registerCommand("moveArmToIntake", Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38)), arm).withTimeout(0.5));

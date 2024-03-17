@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "spinUpShooter"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "bottomcloseshoot"
@@ -36,10 +42,28 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "moveArmToIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "intake"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "spinUpShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "shoot2bottom"
           }
         },
         {

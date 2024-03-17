@@ -40,7 +40,7 @@ public class Swerve extends SubsystemBase {
     //public PigeonIMU gyro;
     public AHRS gyro;
     public Field2d field;
-    private double maxOutput = 0.6;
+    private double maxOutput = 0.90;
     public SwerveDrivePoseEstimator swervePoseEstimator;
     public Spark blinkin;
 

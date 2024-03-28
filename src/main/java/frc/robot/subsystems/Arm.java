@@ -66,6 +66,10 @@ public class Arm extends SubsystemBase {
         bras1.setControl(request.withPosition(angle.getRotations()));
     }
 
+    public Rotation2d getAngle() {
+        return Rotation2d.fromRotations(bras1.getPosition().getValueAsDouble());
+    }
+
     public void periodic() {
         // SmartDashboard.putNumber("Encodeur bras", (encodeur.getAbsolutePosition().getValue() - Constants.ArmConstants.angleOffset.getRotations()) * 360);
         SmartDashboard.putNumber("Arm rotation", (bras1.getPosition().getValueAsDouble() * 360) - 124.8046);

@@ -94,7 +94,7 @@ public final class Constants {
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
-        public static final double alignkP = 0.05;
+        public static final double alignkP = 0.15;
 
         public static final String drivetrainCameraName = "limelight-ai";
 
@@ -121,21 +121,22 @@ public final class Constants {
         //         new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         // }
 
+        /* Front Left Module - Module 0 */
         public static final class Mod0 { 
             public static final int driveMotorID = 51;
             public static final int angleMotorID = 52;
             public static final int canCoderID = 5;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(118.125);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(116.279 + 180);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
 
         /* Front Right Module - Module 1 */
         public static final class Mod1 { 
-            public static final int driveMotorID = 11;
-            public static final int angleMotorID = 12;
-            public static final int canCoderID = 1;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-39.462);
+            public static final int driveMotorID = 41;
+            public static final int angleMotorID = 42;
+            public static final int canCoderID = 4;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(36.562 + 180);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -145,17 +146,17 @@ public final class Constants {
             public static final int driveMotorID = 21;
             public static final int angleMotorID = 22;
             public static final int canCoderID = 2;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-107.05);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(72.334);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
 
         /* Back Right Module - Module 3 */
         public static final class Mod3 { 
-            public static final int driveMotorID = 41;
-            public static final int angleMotorID = 42;
-            public static final int canCoderID = 4;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(122.08);
+            public static final int driveMotorID = 11;
+            public static final int angleMotorID = 12;
+            public static final int canCoderID = 1;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(50.186 + 180);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -189,8 +190,8 @@ public final class Constants {
         public static final Rotation2d angleOffset = Rotation2d.fromDegrees(124.27);
         public static final SensorDirectionValue cancoderInvert = SensorDirectionValue.Clockwise_Positive;
         public static final double kP = 11;
-        public static final double MotionMagicAcceleration = 5;
-        public static final double MotionMagicCruiseVelocity = 5;
+        public static final double MotionMagicAcceleration = 10;
+        public static final double MotionMagicCruiseVelocity = 10;
         public static final double MotionMagicJerk = 0;
         public static final String armLimelightName = "limelight";
         // public static final double armLimelightAngle = 33.7820;

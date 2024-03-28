@@ -7,6 +7,7 @@ import frc.robot.subsystems.Shooter;
 public class SetShooterSpeed extends Command {
     private Swerve swerve;
     private Shooter shooter;
+    private double counter;
 
     public SetShooterSpeed(Swerve swerve, Shooter shooter) {
         this.swerve = swerve;
@@ -16,14 +17,23 @@ public class SetShooterSpeed extends Command {
     @Override
     public void execute() {
         if (swerve.getDistanceToSpeaker() <= 124) {
-            shooter.setVelocity(4450);
+            shooter.setVelocity(4500);
         } else {
-            shooter.setVelocity(4450);
+            shooter.setVelocity(4500);
+        }
+
+        if (shooter.atRPMSetpoint()) {
+            counter++;
         }
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return counter >= 10;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        counter = 0;
     }
 }

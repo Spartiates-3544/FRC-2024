@@ -25,6 +25,9 @@ public class Shooter extends SubsystemBase {
     private TalonFXConfiguration motorConfig;
     private VelocityVoltage velocityVoltage;
     private SimpleMotorFeedforward feedforward;
+    private double rpmSetpoint = 0;
+
+    public boolean hasNote = false;
 
     private SysIdRoutine characterizationRoutine;
 
@@ -77,6 +80,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setVelocity(double rpm) {
+        rpmSetpoint = rpm;
         velocityVoltage.Velocity = (rpm / 60);
         velocityVoltage.FeedForward = feedforward.calculate(rpm / 60);
         shooter1.setControl(velocityVoltage);
@@ -84,6 +88,10 @@ public class Shooter extends SubsystemBase {
 
     public void setVoltage(double voltage) {
         shooter1.setVoltage(voltage);
+    }
+
+    public boolean atRPMSetpoint() {
+        return (shooter1.getVelocity().getValueAsDouble() * 60) >= rpmSetpoint - 150; 
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

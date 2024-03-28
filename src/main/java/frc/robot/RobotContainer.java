@@ -45,6 +45,9 @@ public class RobotContainer {
     // private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final Trigger intakeNote = new Trigger(() -> driver.getRightTriggerAxis() >= 0.3);
     private final Trigger shoot = new Trigger(() -> driver.getLeftTriggerAxis() >= 0.3);
+
+    // private final Trigger hasNote = new Trigger(() -> shooter.hasNote);
+
     private final JoystickButton lowerArmAndCancelAll = new JoystickButton(driver, XboxController.Button.kA.value);
 
     private final POVButton stopAll = new POVButton(driver, 0);
@@ -101,11 +104,14 @@ public class RobotContainer {
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
         reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
 
-        reverseModeTrigger.onTrue(Commands.runOnce(() -> s_Swerve.setLedColor(0.77)));
-        reverseModeTrigger.onFalse(Commands.runOnce(() -> s_Swerve.setLedColor(0.93)));
+        // hasNote.whileTrue(Commands.run(() -> shooter.setVelocity(4500), shooter));
+        // hasNote.whileFalse(Commands.run(() -> shooter.setVelocity(0), shooter));
+
+        reverseModeTrigger.onTrue(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1885);}));
+        reverseModeTrigger.onFalse(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1965);}));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(0.5)), new Pickup2(intake, feeder, shooter, s_Swerve, 0.4).finallyDo(() -> {s_Swerve.setMaxOutput(0.90);})));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new Pickup2(intake, feeder, shooter, s_Swerve, 0.4).finallyDo(() -> {s_Swerve.setMaxOutput(1);})));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
 
@@ -126,7 +132,7 @@ public class RobotContainer {
         //         intake.setSpeed(0);
         //         feeder.setSpeed(0);
         //     }));
-        shoot.onTrue(new ShootGroup(s_Swerve, arm, shooter, feeder, intake));
+        shoot.onTrue(new ShootGroup(s_Swerve, arm, shooter, feeder, intake, () -> -driver.getRawAxis(translationAxis) * s_Swerve.getMaxOutput(), () -> -driver.getRawAxis(strafeAxis) * s_Swerve.getMaxOutput(), () -> -driver.getRawAxis(rotation) * 0.3));
 
         amp.onTrue(Commands.parallel(
             Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
@@ -152,7 +158,7 @@ public class RobotContainer {
 
         stopAll.onTrue(Commands.parallel(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()), Commands.runOnce(() -> shooter.setSpeed(0), shooter)));
 
-        moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.84, 7.13, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
+        moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(14.716, 7.713, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
 
         /* Codriver Bindings */
         intakeForwards.whileTrue(Commands.run(() -> {intake.setSpeed(0.5); feeder.setSpeed(0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));

@@ -46,7 +46,9 @@ public class Pickup2 extends Command {
 
     @Override
     public void initialize() {
-        swerve.setLedColor(0.93);
+        // swerve.setLedColor(0.93);
+        swerve.setLedColor(2145);
+        swerve.setLedColor(1965);
         // swerve.setLedColor(0.83); //Green-Yellow
         // setLedColor(0.87); green
     }
@@ -73,11 +75,13 @@ public class Pickup2 extends Command {
             }
         
             if (sensorDetected) {
-                swerve.setLedColor(0.87);
+                // swerve.setLedColor(0.87);
+                swerve.setLedColor(2145);
+                swerve.setLedColor(1935);
                 counter++;
             }
 
-            if (counter >= 9) {
+            if (counter >= 8) {
                 finished = true;
             }
         } else {
@@ -110,6 +114,8 @@ public class Pickup2 extends Command {
         rpmFilter.reset();
         sensorFilter.reset();
         finished = false;
+
+        // shooter.hasNote = true;
     }
 
 

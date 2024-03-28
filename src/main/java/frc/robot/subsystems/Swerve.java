@@ -24,10 +24,10 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -40,9 +40,9 @@ public class Swerve extends SubsystemBase {
     //public PigeonIMU gyro;
     public AHRS gyro;
     public Field2d field;
-    private double maxOutput = 0.90;
+    private double maxOutput = 1;
     public SwerveDrivePoseEstimator swervePoseEstimator;
-    public Spark blinkin;
+    public PWM blinkin;
 
     private SysIdRoutine characterizationRoutine;
 
@@ -60,8 +60,10 @@ public class Swerve extends SubsystemBase {
         field = new Field2d();
         SmartDashboard.putData(field);
 
-        blinkin = new Spark(0);
-        setLedColor(0.93);
+        // blinkin = new Spark(0);
+        blinkin = new PWM(0);
+        setLedColor(2145);
+        setLedColor(1965);
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.Swerve.Mod0.constants),
             new SwerveModule(1, Constants.Swerve.Mod1.constants),
@@ -156,8 +158,8 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    public void setLedColor(double colorCode) {
-        blinkin.set(colorCode);
+    public void setLedColor(int colorCodeUs) {
+        blinkin.setPulseTimeMicroseconds(colorCodeUs);
     }
 
     public double getDistanceToSpeaker() {

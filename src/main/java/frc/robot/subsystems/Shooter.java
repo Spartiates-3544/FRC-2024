@@ -12,7 +12,7 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
+import edu.wpi.first.units.Voltage; 
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -84,6 +84,19 @@ public class Shooter extends SubsystemBase {
         velocityVoltage.Velocity = (rpm / 60);
         velocityVoltage.FeedForward = feedforward.calculate(rpm / 60);
         shooter1.setControl(velocityVoltage);
+    }
+
+    public void setUpper(double rpm) {
+        rpmSetpoint = rpm;
+        velocityVoltage.Velocity = (rpm / 60);
+        velocityVoltage.FeedForward = feedforward.calculate(rpm / 60);
+        shooter1.setControl(velocityVoltage);
+    }
+
+    public void setLower(double rpm) {
+        velocityVoltage.Velocity = (rpm / 60);
+        velocityVoltage.FeedForward = feedforward.calculate(rpm / 60);
+        shooter2.setControl(velocityVoltage);
     }
 
     public void setVoltage(double voltage) {

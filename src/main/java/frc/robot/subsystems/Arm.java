@@ -71,7 +71,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void periodic() {
-        // SmartDashboard.putNumber("Encodeur bras", (encodeur.getAbsolutePosition().getValue() - Constants.ArmConstants.angleOffset.getRotations()) * 360);
+        SmartDashboard.putNumber("Encodeur bras", (encodeur.getAbsolutePosition().getValueAsDouble()));
         SmartDashboard.putNumber("Arm rotation", (bras1.getPosition().getValueAsDouble() * 360) - 124.8046);
     }
 }

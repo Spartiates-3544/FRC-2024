@@ -94,7 +94,7 @@ public final class Constants {
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
-        public static final double alignkP = 0.15;
+        public static final double alignkP = 0.10;
 
         public static final String drivetrainCameraName = "limelight-ai";
 

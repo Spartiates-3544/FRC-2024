@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.PicoColorSensor;
@@ -20,8 +19,8 @@ public class Intake extends SubsystemBase  {
     @Override
     public void periodic() {
         // SmartDashboard.putNumber("Intake encoder", intakeMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber("Color sensor proximity", colorSensor.getProximity1());
-        SmartDashboard.putBoolean("Color sensor connected", colorSensor.isSensor1Connected());
+        // SmartDashboard.putNumber("Color sensor proximity", colorSensor.getProximity1());
+        // SmartDashboard.putBoolean("Color sensor connected", colorSensor.isSensor1Connected());
     }
 
     public void setSpeed(double speed) {

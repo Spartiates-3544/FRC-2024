@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -59,6 +60,7 @@ public class Swerve extends SubsystemBase {
 
         field = new Field2d();
         SmartDashboard.putData(field);
+        Shuffleboard.getTab("Debug").addDouble("Distance to speaker", () -> getDistanceToSpeaker());
 
         // blinkin = new Spark(0);
         blinkin = new PWM(0);
@@ -252,8 +254,8 @@ public class Swerve extends SubsystemBase {
     public void periodic(){
         swervePoseEstimator.update(getGyroYaw(), getModulePositions());
         field.setRobotPose(getPose());
-        SmartDashboard.putNumber("Gyro", -gyro.getYaw());
-        SmartDashboard.putNumber("Distance to speaker", getDistanceToSpeaker());
+        // SmartDashboard.putNumber("Gyro", -gyro.getYaw());
+        // SmartDashboard.putNumber("Distance to speaker", getDistanceToSpeaker());
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());

@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -47,6 +47,7 @@ public class RobotContainer {
     private final Trigger shoot = new Trigger(() -> driver.getLeftTriggerAxis() >= 0.3);
 
     // private final Trigger hasNote = new Trigger(() -> shooter.hasNote);
+    private final Trigger hasNote = new Trigger(() -> !feeder.getBeamBreak());
 
     private final JoystickButton lowerArmAndCancelAll = new JoystickButton(driver, XboxController.Button.kA.value);
 
@@ -62,9 +63,9 @@ public class RobotContainer {
     private final JoystickButton enableShooter = new JoystickButton(coDriver, 1);
     private final JoystickButton lowerArm = new JoystickButton(coDriver, 4);
     private final JoystickButton ampArm = new JoystickButton(coDriver, 5);
-
     private final JoystickButton spinUpShooter = new JoystickButton(coDriver, 2);
     
+
     private Boolean reverseMode = false;
     private Boolean robotCentric = false;
     private SendableChooser<Command> autoChooser;
@@ -75,22 +76,21 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis) * s_Swerve.getMaxOutput(), 
-                () -> -driver.getRawAxis(strafeAxis) * s_Swerve.getMaxOutput(), 
-                () -> -driver.getRawAxis(rotation) * 0.35, 
+                () -> Math.copySign(driver.getRawAxis(translationAxis) * driver.getRawAxis(translationAxis), driver.getRawAxis(translationAxis)) * s_Swerve.getMaxOutput(), 
+                () -> Math.copySign(driver.getRawAxis(strafeAxis) * driver.getRawAxis(strafeAxis), driver.getRawAxis(strafeAxis)) * s_Swerve.getMaxOutput(), 
+                () -> Math.copySign(driver.getRawAxis(rotation) * driver.getRawAxis(rotation), driver.getRawAxis(rotation)) * 0.35, 
                 () -> robotCentric
             )
         );
 
-        SmartDashboard.putData(CommandScheduler.getInstance());
+        // SmartDashboard.putData(CommandScheduler.getInstance());
         // Configure the button bindings
         configureButtonBindings();
         registerCommands();
 
         autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData(autoChooser);
-
-        SmartDashboard.putData(CommandScheduler.getInstance());
+        Shuffleboard.getTab("Autonome").add(autoChooser).withPosition(0, 0);
+        Shuffleboard.getTab("Debug").add(CommandScheduler.getInstance()).withPosition(0, 0).withSize(3, 2);
     }
 
     /**
@@ -111,7 +111,7 @@ public class RobotContainer {
         reverseModeTrigger.onFalse(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1965);}));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new PickupBeamBreak(intake, feeder, shooter, s_Swerve, 1).finallyDo(() -> {s_Swerve.setMaxOutput(1);})));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37))).withTimeout(0.25), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new PickupBeamBreak_test(intake, feeder, shooter, s_Swerve, 1).finallyDo(() -> {s_Swerve.setMaxOutput(1);})));
         // intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new Pickup2(intake, feeder, shooter, s_Swerve, 0.4).finallyDo(() -> {s_Swerve.setMaxOutput(1);})));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
@@ -160,6 +160,8 @@ public class RobotContainer {
         stopAll.onTrue(Commands.parallel(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()), Commands.runOnce(() -> shooter.setSpeed(0), shooter)));
 
         moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(14.716, 7.713, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
+
+        hasNote.onTrue(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1935);}));
 
         /* Codriver Bindings */
         intakeForwards.whileTrue(Commands.run(() -> {intake.setSpeed(0.5); feeder.setSpeed(0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));

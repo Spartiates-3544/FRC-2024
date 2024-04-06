@@ -26,8 +26,16 @@ public class SetArmAngle extends Command{
     public void execute() {
         // Shuffleboard.getTab("Comp").addBoolean("TargetSpotted", () -> speakerSpotted).withProperties(Map.of("colorWhenTrue", "blue", "colorWhenFalse", "red"));
         double d = swerve.getDistanceToSpeaker();
+        double angleDeg;
         // double angleRot = (0.0497 * Math.log(d)) + 0.2404;
-        double angleDeg = (8E-06 * Math.pow(d, 3)) - (0.0042 * Math.pow(d, 2)) + (0.7094 * d) + 6.2373;
+        // double angleDeg = (8E-06 * Math.pow(d, 3)) - (0.0042 * Math.pow(d, 2)) + (0.7094 * d) + 6.2373;
+        if (d <= 95) {
+            angleDeg = (6E-06 * Math.pow(d, 3)) - (0.0036 * Math.pow(d, 2)) + (0.7560 * d) + 5.1944;
+        } else if(d <= 200){
+            angleDeg = (6E-06 * Math.pow(d, 3)) - (0.0036 * Math.pow(d, 2)) + (0.7410 * d) + 5.1944;
+        } else {
+            angleDeg = (6E-06 * Math.pow(d, 3)) - (0.0036 * Math.pow(d, 2)) + (0.7210 * d) + 5.1944;
+        }
         angleRot = (angleDeg + 124.8046) / 360;
 
         if (angleRot <= 0.6 && angleRot >= 0.4) {

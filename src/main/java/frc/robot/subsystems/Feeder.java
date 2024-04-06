@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +19,7 @@ public class Feeder extends SubsystemBase {
         feeder = new CANSparkMax(6, MotorType.kBrushless);
         feeder.setIdleMode(IdleMode.kBrake);
         feeder.setSmartCurrentLimit(15);
+        Shuffleboard.getTab("Debug").addBoolean("Intake Beam break", () -> beamBreak.get());
     }
 
     @Override
@@ -25,7 +27,7 @@ public class Feeder extends SubsystemBase {
         //SmartDashboard.putNumber("Feeder encoder", feeder.getEncoder().getPosition());
         // SmartDashboard.putNumber("Feeder current", feeder.getOutputCurrent());
         // SmartDashboard.putNumber("Feeder rpm", feeder.getEncoder().getVelocity());
-        SmartDashboard.putBoolean("beam break", beamBreak.get());
+        // SmartDashboard.putBoolean("beam break", beamBreak.get());
     }
 
     public boolean getBeamBreak() {

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -29,10 +30,12 @@ public class Arm extends SubsystemBase {
         motorConfig = new TalonFXConfiguration();
         configMotors();
         configEncoder();
+        Shuffleboard.getTab("Debug").addDouble("Encodeur bras", () -> encodeur.getAbsolutePosition().getValueAsDouble()).withPosition(0, 2);
+        Shuffleboard.getTab("Debug").addDouble("Arm rotation", () -> (bras1.getPosition().getValueAsDouble() * 360) - 124.8046).withPosition(0, 3);
     }
 
     private void configMotors() {
-        bras2.setControl(new Follower(2, true));
+        bras2.setControl(new Follower(bras1.getDeviceID(), true));
         bras1.getConfigurator().apply(motorConfig);
         bras2.getConfigurator().apply(motorConfig);
         motorConfig.Feedback.FeedbackRemoteSensorID = encodeur.getDeviceID();
@@ -41,13 +44,13 @@ public class Arm extends SubsystemBase {
         motorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.37;
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.84;
-        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         motorConfig.Slot0.kP = Constants.ArmConstants.kP;
         motorConfig.MotionMagic.MotionMagicAcceleration = Constants.ArmConstants.MotionMagicAcceleration;
         motorConfig.MotionMagic.MotionMagicCruiseVelocity = Constants.ArmConstants.MotionMagicCruiseVelocity;
         motorConfig.MotionMagic.MotionMagicJerk = Constants.ArmConstants.MotionMagicJerk;
         bras1.getConfigurator().apply(motorConfig);
-        bras2.setNeutralMode(NeutralModeValue.Brake);
+        bras2.setNeutralMode(NeutralModeValue.Coast);
         // bras2.getConfigurator().apply(motorConfig);
     }
 
@@ -71,7 +74,5 @@ public class Arm extends SubsystemBase {
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("Encodeur bras", (encodeur.getAbsolutePosition().getValueAsDouble()));
-        SmartDashboard.putNumber("Arm rotation", (bras1.getPosition().getValueAsDouble() * 360) - 124.8046);
     }
 }

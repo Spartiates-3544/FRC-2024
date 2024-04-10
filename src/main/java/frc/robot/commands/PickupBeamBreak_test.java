@@ -71,7 +71,7 @@ public class PickupBeamBreak_test extends Command {
     public void end(boolean interrupted) {
         intake.setSpeed(0);
         feeder.setSpeed(0);
-        shooter.setSpeed(0);
+        shooter.setVelocity(4000);
         counter = 0;
         finished = false;
         noteIntaked = false;

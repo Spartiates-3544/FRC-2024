@@ -31,7 +31,7 @@ public class SetShooterSpeed extends Command {
 
     @Override
     public boolean isFinished() {
-        return counter >= 20;
+        return counter >= 10;
     }
 
     @Override

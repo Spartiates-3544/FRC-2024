@@ -35,7 +35,7 @@ public class ViserSpeaker extends Command{
 
     @Override
     public boolean isFinished(){
-        return align.atSetpoint();
+        return false;
     }
 
     @Override

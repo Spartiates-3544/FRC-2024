@@ -2,8 +2,13 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
+import java.util.Map;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -18,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commandgroups.ShootGroup;
-import frc.robot.commandgroups.ShootGroup_Auto;
+import frc.robot.commandgroups.ShootGroup_auto;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -47,7 +52,7 @@ public class RobotContainer {
     private final Trigger shoot = new Trigger(() -> driver.getLeftTriggerAxis() >= 0.3);
 
     // private final Trigger hasNote = new Trigger(() -> shooter.hasNote);
-    private final Trigger hasNote = new Trigger(() -> !feeder.getBeamBreak());
+    // private final Trigger hasNote = new Trigger(() -> !feeder.getBeamBreak());
 
     private final JoystickButton lowerArmAndCancelAll = new JoystickButton(driver, XboxController.Button.kA.value);
 
@@ -70,15 +75,17 @@ public class RobotContainer {
     private Boolean robotCentric = false;
     private SendableChooser<Command> autoChooser;
 
+    private HttpCamera limelight;
+
     private Trigger reverseModeTrigger = new Trigger(() -> reverseMode);
 
     public RobotContainer() {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> Math.copySign(driver.getRawAxis(translationAxis) * driver.getRawAxis(translationAxis), driver.getRawAxis(translationAxis)) * s_Swerve.getMaxOutput(), 
-                () -> Math.copySign(driver.getRawAxis(strafeAxis) * driver.getRawAxis(strafeAxis), driver.getRawAxis(strafeAxis)) * s_Swerve.getMaxOutput(), 
-                () -> Math.copySign(driver.getRawAxis(rotation) * driver.getRawAxis(rotation), driver.getRawAxis(rotation)) * 0.35, 
+                () -> -Math.copySign(driver.getRawAxis(translationAxis) * driver.getRawAxis(translationAxis), driver.getRawAxis(translationAxis)) * s_Swerve.getMaxOutput(), 
+                () -> -Math.copySign(driver.getRawAxis(strafeAxis) * driver.getRawAxis(strafeAxis), driver.getRawAxis(strafeAxis)) * s_Swerve.getMaxOutput(), 
+                () -> -Math.copySign(driver.getRawAxis(rotation) * driver.getRawAxis(rotation), driver.getRawAxis(rotation)) * 0.35, 
                 () -> robotCentric
             )
         );
@@ -89,7 +96,11 @@ public class RobotContainer {
         registerCommands();
 
         autoChooser = AutoBuilder.buildAutoChooser();
-        Shuffleboard.getTab("Autonome").add(autoChooser).withPosition(0, 0);
+        Shuffleboard.getTab("Match").add(autoChooser).withPosition(0, 0);
+
+        limelight = new HttpCamera("limelight", "http://10.35.44.11:5800/stream.mjpg", HttpCameraKind.kMJPGStreamer);
+        Shuffleboard.getTab("Match").add("LL", limelight).withPosition(1, 0).withSize(6, 4).withProperties(Map.of("Show Crosshair", true, "Show Controls", false));
+
         Shuffleboard.getTab("Debug").add(CommandScheduler.getInstance()).withPosition(0, 0).withSize(3, 2);
     }
 
@@ -151,9 +162,9 @@ public class RobotContainer {
 
         aimNote.toggleOnTrue(new ViserNoteDrive(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis) * 0.75, 
-                () -> -driver.getRawAxis(strafeAxis) * 0.75, 
-                () -> -driver.getRawAxis(rotation) * 0.20, 
+                () -> driver.getRawAxis(translationAxis) * 0.75, 
+                () -> driver.getRawAxis(strafeAxis) * 0.75, 
+                () -> driver.getRawAxis(rotation) * 0.20, 
                 () -> robotCentric
             ));
 
@@ -161,7 +172,7 @@ public class RobotContainer {
 
         moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(14.716, 7.713, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
 
-        hasNote.onTrue(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1935);}));
+        // hasNote.onTrue(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1935);}));
 
         /* Codriver Bindings */
         intakeForwards.whileTrue(Commands.run(() -> {intake.setSpeed(0.5); feeder.setSpeed(0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
@@ -218,10 +229,10 @@ public class RobotContainer {
                 feeder.setSpeed(0);
             }));
 
-        NamedCommands.registerCommand("intake", new Pickup2(intake, feeder, shooter, s_Swerve, 0.35));
-        NamedCommands.registerCommand("shoot", new ShootGroup_Auto(s_Swerve, arm, feeder, intake));
+        NamedCommands.registerCommand("intake", new PickupBeamBreak(intake, feeder, shooter, s_Swerve, 1));
+        NamedCommands.registerCommand("shoot", new ShootGroup_auto(s_Swerve, arm, shooter, feeder, intake));
         NamedCommands.registerCommand("spinUpShooter", Commands.runOnce(() -> shooter.setVelocity(4450), shooter));
-        NamedCommands.registerCommand("moveArmToIntake", Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.38)), arm).withTimeout(0.5));
+        NamedCommands.registerCommand("moveArmToIntake", Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37)), arm).withTimeout(0.25));
     }
 
     public Command getAutonomousCommand() {

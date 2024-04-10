@@ -8,12 +8,18 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
+
+import java.util.Optional;
+
 // import com.ctre.phoenix.sensors.PigeonIMU;
 // import com.ctre.phoenix.sensors.PigeonIMUConfiguration;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -44,6 +50,7 @@ public class Swerve extends SubsystemBase {
     private double maxOutput = 1;
     public SwerveDrivePoseEstimator swervePoseEstimator;
     public PWM blinkin;
+    private AprilTagFieldLayout fieldLayout;
 
     private SysIdRoutine characterizationRoutine;
 
@@ -58,6 +65,7 @@ public class Swerve extends SubsystemBase {
         //gyro.setYaw(0);
         gyro.reset();
 
+        fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
         field = new Field2d();
         SmartDashboard.putData(field);
         Shuffleboard.getTab("Debug").addDouble("Distance to speaker", () -> getDistanceToSpeaker());
@@ -164,11 +172,33 @@ public class Swerve extends SubsystemBase {
         blinkin.setPulseTimeMicroseconds(colorCodeUs);
     }
 
+    // public double getDistanceToSpeaker() {
+    //     if (LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 4 || LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 7) {
+    //        return (Constants.FieldConstants.speakerApriltagHeight - Constants.ArmConstants.armLimelightHeight) / Math.tan(Math.toRadians(Constants.ArmConstants.armLimelightAngle + LimelightHelpers.getTY(Constants.ArmConstants.armLimelightName)));
+    //     }
+    //     else return 0;
+    // }
+
     public double getDistanceToSpeaker() {
-        if (LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 4 || LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 7) {
+        if (LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName) && LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 4 || LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName) && LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 7) {
            return (Constants.FieldConstants.speakerApriltagHeight - Constants.ArmConstants.armLimelightHeight) / Math.tan(Math.toRadians(Constants.ArmConstants.armLimelightAngle + LimelightHelpers.getTY(Constants.ArmConstants.armLimelightName)));
+        } else {
+            Pose2d speakerPose = fieldLayout.getTagPose(7).orElseGet(() -> new Pose3d()).toPose2d();
+            Pose2d robotPose = swervePoseEstimator.getEstimatedPosition();
+            return (Math.sqrt(Math.pow(robotPose.getX() - speakerPose.getX(), 2) + Math.pow(robotPose.getY() - speakerPose.getY(), 2)) * 39.3701) - 15.35433;
         }
-        else return 0;
+        // return (swervePoseEstimator.getEstimatedPosition().getTranslation().getDistance(speakerPose.toPose2d().getTranslation())) * 39.3701;
+    }
+
+    public double getSpeakerAngle() {
+        if (LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName) && LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 4 || LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName) && LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 7) {
+           return LimelightHelpers.getTX(Constants.ArmConstants.armLimelightName);
+        } else {
+            Pose2d speakerPose = fieldLayout.getTagPose(7).orElseGet(() -> new Pose3d()).toPose2d();
+            Pose2d robotPose = swervePoseEstimator.getEstimatedPosition();
+            // return Math.toDegrees(Math.atan((speakerPose.getY() - robotPose.getY()) / (speakerPose.getX() - robotPose.getX())));
+            return 180 - Math.toDegrees(Math.atan((speakerPose.getY() - robotPose.getY()) / (speakerPose.getX() - robotPose.getX()))) - robotPose.getRotation().getDegrees();
+        }
     }
 
     /* Used by SwerveControllerCommand in Auto */
@@ -254,16 +284,17 @@ public class Swerve extends SubsystemBase {
     public void periodic(){
         swervePoseEstimator.update(getGyroYaw(), getModulePositions());
         field.setRobotPose(getPose());
+        field.getObject("test").setPose(fieldLayout.getTagPose(7).orElseThrow().toPose2d());
         // SmartDashboard.putNumber("Gyro", -gyro.getYaw());
-        // SmartDashboard.putNumber("Distance to speaker", getDistanceToSpeaker());
-
+        SmartDashboard.putNumber("Distance to speaker", getDistanceToSpeaker());
+        SmartDashboard.putNumber("Angle", getSpeakerAngle());
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
 
-        if (LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName) && !DriverStation.isAutonomous()) {
+        if (LimelightHelpers.getTV(Constants.ArmConstants.armLimelightName)) {
             addVisionMeasurement(LimelightHelpers.getBotPose2d_wpiBlue(Constants.ArmConstants.armLimelightName), (Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Capture(Constants.ArmConstants.armLimelightName) / 1000) - (LimelightHelpers.getLatency_Pipeline(Constants.ArmConstants.armLimelightName)) / 1000));
         }
     }

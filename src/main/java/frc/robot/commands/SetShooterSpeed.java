@@ -12,6 +12,7 @@ public class SetShooterSpeed extends Command {
     public SetShooterSpeed(Swerve swerve, Shooter shooter) {
         this.swerve = swerve;
         this.shooter = shooter;
+        addRequirements(shooter);
     }
 
     @Override
@@ -19,9 +20,9 @@ public class SetShooterSpeed extends Command {
         if (swerve.getDistanceToSpeaker() <= 95) {
             shooter.setVelocity(4500);
         } else if(swerve.getDistanceToSpeaker() <= 200){
-            shooter.setVelocity(5500);
+            shooter.setVelocity(5000);
         } else {
-            shooter.setVelocity(5800);
+            shooter.setVelocity(5500);
         }
 
         if (shooter.atRPMSetpoint()) {

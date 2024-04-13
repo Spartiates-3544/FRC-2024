@@ -72,6 +72,8 @@ public class PickupBeamBreak_test extends Command {
         intake.setSpeed(0);
         feeder.setSpeed(0);
         shooter.setVelocity(4000);
+        swerve.setLedColor(2145); 
+        swerve.setLedColor(1935);
         counter = 0;
         finished = false;
         noteIntaked = false;

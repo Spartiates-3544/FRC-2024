@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -34,6 +33,7 @@ public class RobotContainer {
     private final Intake intake = new Intake();
     private final Shooter shooter = new Shooter();
     private final Feeder feeder = new Feeder();
+    private final Climber climber = new Climber();
 
     /* Controllers */
     private final XboxController driver = new XboxController(0);
@@ -47,9 +47,14 @@ public class RobotContainer {
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton amp = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton raiseClimber = new JoystickButton(driver, XboxController.Button.kStart.value);
+    private final JoystickButton lowerClimber = new JoystickButton(driver, XboxController.Button.kBack.value);
+    
     // private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final Trigger intakeNote = new Trigger(() -> driver.getRightTriggerAxis() >= 0.3);
     private final Trigger shoot = new Trigger(() -> driver.getLeftTriggerAxis() >= 0.3);
+
+    private final Trigger inShootRange = new Trigger(() -> s_Swerve.getDistanceToSpeaker() <= 120 && !feeder.getBeamBreak());
 
     // private final Trigger hasNote = new Trigger(() -> shooter.hasNote);
     // private final Trigger hasNote = new Trigger(() -> !feeder.getBeamBreak());
@@ -128,7 +133,9 @@ public class RobotContainer {
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
 
         lowerArmAndCancelAll.onTrue(Commands.parallel(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.38)), arm), Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll())));
-
+        
+        raiseClimber.onTrue(Commands.runOnce(() -> {climber.setSpeed(-0.1); arm.setAngle(Rotation2d.fromRotations(0.55));}, climber, arm));
+        lowerClimber.onTrue(Commands.runOnce(() -> {climber.setSpeed(0); arm.setAngle(Rotation2d.fromRotations(0.37));}, climber, arm));
         //WHAT THE HECK??? Too lazy to put this in a separate file
         // shoot.onTrue(Commands.parallel(
         //     Commands.run(() -> shooter.setVelocity(4500), shooter),
@@ -212,6 +219,10 @@ public class RobotContainer {
         //     s_Swerve.mSwerveMods[2].setAngleAngle(Rotation2d.fromDegrees(0));
         //     s_Swerve.mSwerveMods[3].setAngleAngle(Rotation2d.fromDegrees(0));})
         //     ));
+
+        /* Range bindings */
+        inShootRange.onTrue(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1805);}));
+        inShootRange.onFalse(Commands.either(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1965);}), Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1935);}), () -> feeder.getBeamBreak()));
     }
 
     private void registerCommands() {

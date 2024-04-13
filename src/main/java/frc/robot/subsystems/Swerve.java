@@ -9,8 +9,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
-import java.util.Optional;
-
 // import com.ctre.phoenix.sensors.PigeonIMU;
 // import com.ctre.phoenix.sensors.PigeonIMUConfiguration;
 import com.kauailabs.navx.frc.AHRS;
@@ -197,7 +195,7 @@ public class Swerve extends SubsystemBase {
             Pose2d speakerPose = fieldLayout.getTagPose(7).orElseGet(() -> new Pose3d()).toPose2d();
             Pose2d robotPose = swervePoseEstimator.getEstimatedPosition();
             // return Math.toDegrees(Math.atan((speakerPose.getY() - robotPose.getY()) / (speakerPose.getX() - robotPose.getX())));
-            return 180 - Math.toDegrees(Math.atan((speakerPose.getY() - robotPose.getY()) / (speakerPose.getX() - robotPose.getX()))) - robotPose.getRotation().getDegrees();
+            return -(Math.toDegrees(Math.atan((robotPose.getY() - speakerPose.getY()) / (robotPose.getX() - speakerPose.getX()))) - robotPose.getRotation().getDegrees());
         }
     }
 

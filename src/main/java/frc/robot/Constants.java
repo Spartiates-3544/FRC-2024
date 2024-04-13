@@ -55,7 +55,7 @@ public final class Constants {
         public static final double angleCurrentThresholdTime = 0.1;
         public static final boolean angleEnableCurrentLimit = true;
 
-        public static final int driveCurrentLimit = 35;
+        public static final int driveCurrentLimit = 50;
         public static final int driveCurrentThreshold = 60;
         public static final double driveCurrentThresholdTime = 0.1;
         public static final boolean driveEnableCurrentLimit = true;
@@ -86,7 +86,8 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.525;
+        // public static final double maxSpeed = 4.525;
+        public static final double maxSpeed = 5.9436;
         /** Radians per Second */
         public static final double maxAngularVelocity = 23.364;
 
@@ -163,8 +164,8 @@ public final class Constants {
     }
 
     public static final class AutoConstants { 
-        public static final double kMaxSpeedMetersPerSecond = 5;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+        public static final double kMaxSpeedMetersPerSecond = 6;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 6;
         public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
     
@@ -189,9 +190,9 @@ public final class Constants {
     public static final class ArmConstants {
         public static final Rotation2d angleOffset = Rotation2d.fromDegrees(124.27);
         public static final SensorDirectionValue cancoderInvert = SensorDirectionValue.Clockwise_Positive;
-        public static final double kP = 11;
-        public static final double MotionMagicAcceleration = 30;
-        public static final double MotionMagicCruiseVelocity = 100;
+        public static final double kP = 13;
+        public static final double MotionMagicAcceleration = 60;
+        public static final double MotionMagicCruiseVelocity = 200;
         public static final double MotionMagicJerk = 0;
         public static final String armLimelightName = "limelight";
         // public static final double armLimelightAngle = 33.7820;
@@ -218,5 +219,11 @@ public final class Constants {
 
     public static final class FieldConstants {
         public static final double speakerApriltagHeight = 49.88;
+    }
+
+    public static final class ClimberConstants{
+        public static final double kP = 2;
+        public static final double kI = 0;
+        public static final double kD = 0;
     }
 }

@@ -6,12 +6,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Swerve;
 
-public class SetArmAngle extends Command{
+public class SetArmAngle_auto extends Command{
     private Arm arm;
     private Swerve swerve;
     private double angleRot = 0.42;
 
-    public SetArmAngle(Arm arm, Swerve swerve) {
+    public SetArmAngle_auto(Arm arm, Swerve swerve) {
         this.arm = arm;
         this.swerve = swerve;
         addRequirements(arm);
@@ -25,7 +25,7 @@ public class SetArmAngle extends Command{
         // double angleRot = (0.0497 * Math.log(d)) + 0.2404;
         // double angleDeg = (8E-06 * Math.pow(d, 3)) - (0.0042 * Math.pow(d, 2)) + (0.7094 * d) + 6.2373;
         if (d <= 95) {
-            angleDeg = (6E-06 * Math.pow(d, 3)) - (0.0036 * Math.pow(d, 2)) + (0.7650 * d) + 5.1944;
+            angleDeg = (6E-06 * Math.pow(d, 3)) - (0.0036 * Math.pow(d, 2)) + (0.7670 * d) + 5.1944;
         } else if (d <= 200){
             angleDeg = (6E-06 * Math.pow(d, 3)) - (0.0036 * Math.pow(d, 2)) + (0.7530 * d) + 5.1944;
         } else {
@@ -50,6 +50,6 @@ public class SetArmAngle extends Command{
 
     @Override
     public boolean isFinished() {
-        return arm.getAngle().getRotations() >= angleRot - 0.01;
+        return false;
     }
 }

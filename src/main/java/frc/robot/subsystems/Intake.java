@@ -13,6 +13,7 @@ public class Intake extends SubsystemBase  {
 
     public Intake() {
         intakeMotor = new CANSparkMax(4, MotorType.kBrushless);
+        intakeMotor.setSmartCurrentLimit(20);
         colorSensor = new PicoColorSensor();
     }
 

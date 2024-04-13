@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.Swerve;
 
 import java.util.function.DoubleSupplier;
@@ -38,22 +37,12 @@ public class ViserSpeakerDrive extends Command {
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
-        if (LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 4 || LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 7) {
-            /* Drive with tracking*/
-            s_Swerve.drive(
-                new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
-                (rotationVal * Constants.Swerve.maxAngularVelocity) + align.calculate(LimelightHelpers.getTX(Constants.ArmConstants.armLimelightName)), 
-                true, 
-                true
-            );
-        } else {
-            /* Drive */
-            s_Swerve.drive(
-                new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
-                (rotationVal * Constants.Swerve.maxAngularVelocity), 
-                true, 
-                true  
-            );
-        }
+        /* Drive with tracking*/
+        s_Swerve.drive(
+            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
+            (rotationVal * Constants.Swerve.maxAngularVelocity) + align.calculate(s_Swerve.getSpeakerAngle()), 
+            true, 
+            true
+        );
     }
 }

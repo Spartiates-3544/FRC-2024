@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commandgroups.AmpGroup;
 import frc.robot.commandgroups.PassGroup;
 import frc.robot.commandgroups.ShootGroup;
-import frc.robot.commandgroups.ShootGroup_auto;
+import frc.robot.commandgroups.ShootGroup_Auto;
 import frc.robot.commandgroups.ShootGroup_auto_noaim;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -124,7 +125,7 @@ public class RobotContainer {
         reverseModeTrigger.onFalse(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1965);}));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37))).withTimeout(0.25), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new PickupBeamBreak(intake, feeder, shooter, s_Swerve, 1).finallyDo(() -> {s_Swerve.setMaxOutput(1);})));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37))).withTimeout(0.25), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new PickupBeamBreak(intake, feeder, shooter, s_Swerve, 1).finallyDo(() -> {s_Swerve.setMaxOutput(1);}), Commands.run(() -> driver.setRumble(RumbleType.kBothRumble, 0.5)).finallyDo(() -> driver.setRumble(RumbleType.kBothRumble, 0)).withTimeout(0.1)));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
         
@@ -197,7 +198,7 @@ public class RobotContainer {
         //     }));
         NamedCommands.registerCommand("placerAmp", new AmpGroup(intake, arm, feeder, shooter));
         NamedCommands.registerCommand("intake", new PickupBeamBreak(intake, feeder, shooter, s_Swerve, 1));
-        NamedCommands.registerCommand("shoot", new ShootGroup_auto(s_Swerve, arm, shooter, feeder, intake));
+        NamedCommands.registerCommand("shoot", new ShootGroup_Auto(s_Swerve, arm, shooter, feeder, intake));
         NamedCommands.registerCommand("shoot_noaim", new ShootGroup_auto_noaim(s_Swerve, arm, shooter, feeder));
         NamedCommands.registerCommand("spinUpShooter", Commands.runOnce(() -> shooter.setVelocity(4450), shooter));
         NamedCommands.registerCommand("moveArmToIntake", Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37)), arm).withTimeout(0.25));

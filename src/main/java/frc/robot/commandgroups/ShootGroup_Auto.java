@@ -13,8 +13,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 
 
-public class ShootGroup_auto extends SequentialCommandGroup {
-    public ShootGroup_auto(Swerve swerve, Arm arm, Shooter shooter, Feeder feeder, Intake intake) {
+public class ShootGroup_Auto extends SequentialCommandGroup {
+    public ShootGroup_Auto(Swerve swerve, Arm arm, Shooter shooter, Feeder feeder, Intake intake) {
         addCommands(
             Commands.race(
                 Commands.sequence(

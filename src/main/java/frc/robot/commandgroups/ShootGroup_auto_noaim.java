@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.SetArmAngle;
 import frc.robot.commands.SetShooterSpeed;
-import frc.robot.commands.ViserSpeaker;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Shooter;

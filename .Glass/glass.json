@@ -4,11 +4,19 @@
       "CameraPublisher": {
         "open": true
       },
-      "limelight": {
-        "double[]##v_/limelight/botpose_wpiblue": {
+      "SmartDashboard": {
+        "Field": {
+          "double[]##v_/SmartDashboard/Field/Robot": {
+            "open": true
+          },
           "open": true
         },
         "open": true
+      },
+      "limelight": {
+        "double[]##v_/limelight/botpose_wpiblue": {
+          "open": true
+        }
       }
     },
     "types": {

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
@@ -51,6 +52,24 @@ public class Arm extends SubsystemBase {
         bras1.getConfigurator().apply(motorConfig);
         bras2.setNeutralMode(NeutralModeValue.Brake);
         // bras2.getConfigurator().apply(motorConfig);
+    }
+
+    public void setMotionMagicConstants(double cruiseVelocity, double acceleration, double jerk) {
+        MotionMagicConfigs config = new MotionMagicConfigs();
+        config.MotionMagicAcceleration = acceleration;
+        config.MotionMagicCruiseVelocity = cruiseVelocity;
+        config.MotionMagicJerk = jerk;
+        bras1.getConfigurator().apply(config);
+        bras2.getConfigurator().apply(config);
+    }
+
+    public void resetMotionMagicConstants() {
+        MotionMagicConfigs config = new MotionMagicConfigs();
+        config.MotionMagicAcceleration = Constants.ArmConstants.MotionMagicAcceleration;
+        config.MotionMagicCruiseVelocity = Constants.ArmConstants.MotionMagicCruiseVelocity;
+        config.MotionMagicJerk = Constants.ArmConstants.MotionMagicJerk;
+        bras1.getConfigurator().apply(config);
+        bras2.getConfigurator().apply(config);
     }
 
     private void configEncoder() {

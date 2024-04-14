@@ -26,7 +26,7 @@ public class ShootGroup_auto extends SequentialCommandGroup {
                         // Commands.race(new SetArmAngle(arm, swerve), Commands.run(() -> intake.setSpeed(0.3), intake).finallyDo(() -> intake.setSpeed(0))),
                             Commands.run(() -> feeder.setSpeed(1), feeder).withTimeout(1)
                             .finallyDo(() -> {
-                                shooter.setSpeed(0);
+                                shooter.setVelocity(4500);
                                 intake.setSpeed(0);
                                 feeder.setSpeed(0);
                             }),

@@ -20,8 +20,8 @@ public class ViserSpeakerDrive extends Command {
     private PIDController align;
 
     public ViserSpeakerDrive(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup) {
-        align = new PIDController(Constants.Swerve.alignkP, Constants.Swerve.alignkI, 0);
-        align.setSetpoint(0);
+        align = new PIDController(Constants.Swerve.alignkP, Constants.Swerve.alignkI, Constants.Swerve.alignkD);
+        align.setSetpoint(-2);
         align.setTolerance(0.25);
         addRequirements(s_Swerve);
         this.s_Swerve = s_Swerve;

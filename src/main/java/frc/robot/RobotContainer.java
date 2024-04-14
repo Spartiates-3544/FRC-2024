@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import java.util.Map;
 
@@ -8,7 +9,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -21,8 +21,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commandgroups.AmpGroup;
+import frc.robot.commandgroups.PassGroup;
 import frc.robot.commandgroups.ShootGroup;
 import frc.robot.commandgroups.ShootGroup_auto;
+import frc.robot.commandgroups.ShootGroup_auto_noaim;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -49,6 +52,7 @@ public class RobotContainer {
     private final JoystickButton amp = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton raiseClimber = new JoystickButton(driver, XboxController.Button.kStart.value);
     private final JoystickButton lowerClimber = new JoystickButton(driver, XboxController.Button.kBack.value);
+    private final JoystickButton pass = new JoystickButton(driver, XboxController.Button.kA.value);
     
     // private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final Trigger intakeNote = new Trigger(() -> driver.getRightTriggerAxis() >= 0.3);
@@ -56,15 +60,10 @@ public class RobotContainer {
 
     private final Trigger inShootRange = new Trigger(() -> s_Swerve.getDistanceToSpeaker() <= 120 && !feeder.getBeamBreak());
 
-    // private final Trigger hasNote = new Trigger(() -> shooter.hasNote);
-    // private final Trigger hasNote = new Trigger(() -> !feeder.getBeamBreak());
-
-    private final JoystickButton lowerArmAndCancelAll = new JoystickButton(driver, XboxController.Button.kA.value);
-
     private final POVButton stopAll = new POVButton(driver, 0);
     private final POVButton reverseToggle = new POVButton(driver, 180);
-    private final POVButton moveToAmp = new POVButton(driver, 90);
-    private final JoystickButton aimNote = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton moveToAmp = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    // private final JoystickButton aimNote = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Copilot Buttons */
     private final JoystickButton intakeForwards = new JoystickButton(coDriver, 11);
@@ -81,6 +80,7 @@ public class RobotContainer {
     private SendableChooser<Command> autoChooser;
 
     private HttpCamera limelight;
+    private PathPlannerPath OTFAmp = PathPlannerPath.fromPathFile("Worlds_OnTheFlyAmp");
 
     private Trigger reverseModeTrigger = new Trigger(() -> reverseMode);
 
@@ -116,77 +116,33 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /* Driver Buttons */
+        /* Driver Bindings */
         zeroGyro.onTrue(Commands.runOnce(() -> s_Swerve.zeroHeading()));
+
         reverseToggle.onTrue(Commands.runOnce(() -> reverseMode = !reverseMode));
-
-        // hasNote.whileTrue(Commands.run(() -> shooter.setVelocity(4500), shooter));
-        // hasNote.whileFalse(Commands.run(() -> shooter.setVelocity(0), shooter));
-
         reverseModeTrigger.onTrue(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1885);}));
         reverseModeTrigger.onFalse(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1965);}));
 
         //Intake
-        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37))).withTimeout(0.25), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new PickupBeamBreak_test(intake, feeder, shooter, s_Swerve, 1).finallyDo(() -> {s_Swerve.setMaxOutput(1);})));
-        // intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37))).withTimeout(0.5), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new Pickup2(intake, feeder, shooter, s_Swerve, 0.4).finallyDo(() -> {s_Swerve.setMaxOutput(1);})));
+        intakeNote.and(() -> !reverseMode).onTrue(Commands.sequence(Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37))).withTimeout(0.25), Commands.runOnce(() -> s_Swerve.setMaxOutput(1)), new PickupBeamBreak(intake, feeder, shooter, s_Swerve, 1).finallyDo(() -> {s_Swerve.setMaxOutput(1);})));
         //Outtake
         intakeNote.and(() -> reverseMode).onTrue(Commands.parallel(Commands.run(() -> intake.setSpeed(-0.3)), Commands.run(() -> feeder.setSpeed(-0.5))).withTimeout(1.5).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
-
-        lowerArmAndCancelAll.onTrue(Commands.parallel(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.38)), arm), Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll())));
         
-        raiseClimber.onTrue(Commands.runOnce(() -> {climber.setSpeed(-0.1); arm.setAngle(Rotation2d.fromRotations(0.55));}, climber, arm));
-        lowerClimber.onTrue(Commands.runOnce(() -> {climber.setSpeed(0); arm.setAngle(Rotation2d.fromRotations(0.37));}, climber, arm));
-        //WHAT THE HECK??? Too lazy to put this in a separate file
-        // shoot.onTrue(Commands.parallel(
-        //     Commands.run(() -> shooter.setVelocity(4500), shooter),
-        //     new ViserSpeaker(s_Swerve).withTimeout(1),
-        //     Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
-        //     Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.47)), arm),
-        //     Commands.sequence(
-        //         Commands.waitSeconds(2),  
-        //         Commands.run(() -> feeder.setSpeed(0.7), feeder)
-        //         )
-        //     ).withTimeout(5).finallyDo(() -> {
-        //         shooter.setSpeed(0);
-        //         intake.setSpeed(0);
-        //         feeder.setSpeed(0);
-        //     }));
+        raiseClimber.onTrue(Commands.runOnce(() -> {climber.setSpeed(-0.1); arm.resetMotionMagicConstants(); arm.setAngle(Rotation2d.fromRotations(0.55));}, climber, arm));
+        lowerClimber.onTrue(Commands.runOnce(() -> {climber.setSpeed(0); arm.setMotionMagicConstants(Constants.ArmConstants.MotionMagicCruiseVelocity, 1, 0.5); arm.setAngle(Rotation2d.fromRotations(0.37));}, climber, arm));
+
         shoot.onTrue(new ShootGroup(s_Swerve, arm, shooter, feeder, intake, () -> -driver.getRawAxis(translationAxis) * s_Swerve.getMaxOutput(), () -> -driver.getRawAxis(strafeAxis) * s_Swerve.getMaxOutput(), () -> -driver.getRawAxis(rotation) * 0.3));
+        amp.onTrue(new AmpGroup(intake, arm, feeder, shooter));
+        pass.onTrue(new PassGroup(s_Swerve, arm, shooter, feeder, intake));
+        // moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(1.775, 7.506, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
+        moveToAmp.onTrue(AutoBuilder.pathfindThenFollowPath(OTFAmp, Constants.AutoConstants.constraints));
 
-        amp.onTrue(Commands.parallel(
-            Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
-            Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.63)), arm),
-            Commands.sequence(
-                Commands.waitSeconds(2),  
-                Commands.parallel(
-                    Commands.run(() -> feeder.setSpeed(1), feeder),
-                    Commands.run(() -> shooter.setSpeed(0.4), shooter)))
-            ).withTimeout(3).finallyDo(() -> {
-                shooter.setSpeed(0);
-                intake.setSpeed(0);
-                feeder.setSpeed(0);
-            }));
-
-        aimNote.toggleOnTrue(new ViserNoteDrive(
-                s_Swerve, 
-                () -> driver.getRawAxis(translationAxis) * 0.75, 
-                () -> driver.getRawAxis(strafeAxis) * 0.75, 
-                () -> driver.getRawAxis(rotation) * 0.20, 
-                () -> robotCentric
-            ));
-
-        stopAll.onTrue(Commands.parallel(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()), Commands.runOnce(() -> shooter.setSpeed(0), shooter)));
-
-        moveToAmp.onTrue(AutoBuilder.pathfindToPose(new Pose2d(14.716, 7.713, Rotation2d.fromDegrees(-90)), Constants.AutoConstants.constraints, 0).withTimeout(10));
-
-        // hasNote.onTrue(Commands.runOnce(() -> {s_Swerve.setLedColor(2145); s_Swerve.setLedColor(1935);}));
+        stopAll.onTrue(Commands.parallel(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()), Commands.runOnce(() -> shooter.setSpeed(0), shooter), Commands.runOnce(() -> arm.resetMotionMagicConstants())));
 
         /* Codriver Bindings */
         intakeForwards.whileTrue(Commands.run(() -> {intake.setSpeed(0.5); feeder.setSpeed(0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
         intakeBackwards.whileTrue(Commands.run(() -> {intake.setSpeed(-0.5); feeder.setSpeed(-0.5);}, intake, feeder).finallyDo(() -> {intake.setSpeed(0); feeder.setSpeed(0);}));
-        //Arm control
         enableArmControl.toggleOnTrue(Commands.run(() -> arm.pourcentageControl(coDriver.getRawAxis(1) * 0.3), arm).finallyDo(() -> arm.setAngle(Rotation2d.fromRotations(0.39))));
-        //Shooter control
         enableShooter.whileTrue(Commands.run(() -> shooter.setVelocity((coDriver.getRawAxis(2) + 1) / 2 * Constants.ShooterConstants.shooterMaxRPM), shooter).finallyDo(() -> shooter.setSpeed(0)));
 
         lowerArm.onTrue(Commands.runOnce(() -> arm.setAngle(Rotation2d.fromRotations(0.38)), arm));
@@ -226,22 +182,23 @@ public class RobotContainer {
     }
 
     private void registerCommands() {
-        NamedCommands.registerCommand("placerAmp", Commands.parallel(
-            Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
-            Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.63)), arm),
-            Commands.sequence(
-                Commands.waitSeconds(2),  
-                Commands.parallel(
-                    Commands.run(() -> feeder.setSpeed(1), feeder),
-                    Commands.run(() -> shooter.setSpeed(0.4), shooter)))
-            ).withTimeout(3).finallyDo(() -> {
-                shooter.setSpeed(0);
-                intake.setSpeed(0);
-                feeder.setSpeed(0);
-            }));
-
+        // NamedCommands.registerCommand("placerAmp", Commands.parallel(
+        //     Commands.run(() -> intake.setSpeed(0.3), intake).withTimeout(1).finallyDo(() -> intake.setSpeed(0)),
+        //     Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.63)), arm),
+        //     Commands.sequence(
+        //         Commands.waitSeconds(2),  
+        //         Commands.parallel(
+        //             Commands.run(() -> feeder.setSpeed(1), feeder),
+        //             Commands.run(() -> shooter.setSpeed(0.4), shooter)))
+        //     ).withTimeout(3).finallyDo(() -> {
+        //         shooter.setSpeed(0);
+        //         intake.setSpeed(0);
+        //         feeder.setSpeed(0);
+        //     }));
+        NamedCommands.registerCommand("placerAmp", new AmpGroup(intake, arm, feeder, shooter));
         NamedCommands.registerCommand("intake", new PickupBeamBreak(intake, feeder, shooter, s_Swerve, 1));
         NamedCommands.registerCommand("shoot", new ShootGroup_auto(s_Swerve, arm, shooter, feeder, intake));
+        NamedCommands.registerCommand("shoot_noaim", new ShootGroup_auto_noaim(s_Swerve, arm, shooter, feeder));
         NamedCommands.registerCommand("spinUpShooter", Commands.runOnce(() -> shooter.setVelocity(4450), shooter));
         NamedCommands.registerCommand("moveArmToIntake", Commands.run(() -> arm.setAngle(Rotation2d.fromRotations(0.37)), arm).withTimeout(0.25));
     }

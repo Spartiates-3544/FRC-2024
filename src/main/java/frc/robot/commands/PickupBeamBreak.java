@@ -16,6 +16,9 @@ public class PickupBeamBreak extends Command {
     // private int reverseCounter = 0;
 
     private double speed;
+    private boolean noteIntaked = false;
+    private boolean finished = false;
+    private double counter = 0;
 
     public PickupBeamBreak(Intake intake, Feeder feeder, Shooter shooter, Swerve swerve, double speed) {
         this.intake = intake;
@@ -37,18 +40,43 @@ public class PickupBeamBreak extends Command {
         intake.setVoltage(speed * RobotController.getBatteryVoltage());
         feeder.setVoltage(speed * RobotController.getBatteryVoltage());
         shooter.setVoltage(-0.3 * RobotController.getBatteryVoltage());
+
+        if (!feeder.getBeamBreak()) {
+            noteIntaked = true;
+        }
+
+        if (noteIntaked && counter < 15) {
+            feeder.setSpeed(-speed);
+            intake.setSpeed(-speed);
+            counter++;
+        }
+        
+        if (counter >= 15 && feeder.getBeamBreak()) {
+            feeder.setSpeed(speed);
+            intake.setSpeed(speed);
+        }
+
+        if (counter >= 15 && !feeder.getBeamBreak()) {
+            finished = true;
+        }
+
     }
 
     @Override
     public boolean isFinished() {
-        return !feeder.getBeamBreak();
+        return finished;
     }
 
     @Override
     public void end(boolean interrupted) {
         intake.setSpeed(0);
         feeder.setSpeed(0);
-        shooter.setSpeed(0);
+        shooter.setVelocity(4000);
+        swerve.setLedColor(2145); 
+        swerve.setLedColor(1935);
+        counter = 0;
+        finished = false;
+        noteIntaked = false;
     }
 
 

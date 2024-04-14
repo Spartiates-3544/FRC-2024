@@ -95,11 +95,11 @@ public final class Constants {
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
-        public static final double alignkP = 0.10;
+        public static final double alignkP = 0.15;
+        public static final double alignkI = 0.0;
+        public static final double alignkD = 0.01;
 
         public static final String drivetrainCameraName = "limelight-ai";
-
-        public static final double alignkI = 0.0;
 
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
@@ -164,8 +164,8 @@ public final class Constants {
     }
 
     public static final class AutoConstants { 
-        public static final double kMaxSpeedMetersPerSecond = 6;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 6;
+        public static final double kMaxSpeedMetersPerSecond = 7.25;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 7.25;
         public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
     
@@ -173,7 +173,7 @@ public final class Constants {
         public static final double kPYController = 1;
         public static final double kPThetaController = 3.9;
 
-        public static final PathConstraints constraints = new PathConstraints(3, 3.00, Units.degreesToRadians(540.00), Units.degreesToRadians(720.00));
+        public static final PathConstraints constraints = new PathConstraints(6, 6.00, Math.PI, Math.PI);
     
         /* Constraint for the motion profilied robot angle controller */
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =

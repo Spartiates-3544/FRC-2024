@@ -14,8 +14,8 @@ public class ViserSpeaker extends Command{
     private ChassisSpeeds output;
 
     public ViserSpeaker(Swerve swerve) {
-        align = new PIDController(Constants.Swerve.alignkP, Constants.Swerve.alignkI, 0);
-        align.setSetpoint(0);
+        align = new PIDController(Constants.Swerve.alignkP, Constants.Swerve.alignkI, Constants.Swerve.alignkD);
+        align.setSetpoint(-2);
         align.setTolerance(0.25);
         output = new ChassisSpeeds();
         this.swerve = swerve;
@@ -27,8 +27,9 @@ public class ViserSpeaker extends Command{
         if (LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 4 || LimelightHelpers.getFiducialID(Constants.ArmConstants.armLimelightName) == 7) {
             output.omegaRadiansPerSecond = align.calculate(LimelightHelpers.getTX(Constants.ArmConstants.armLimelightName));
             swerve.setChassisSpeeds(output);
+        } else {
+            swerve.setChassisSpeeds(new ChassisSpeeds());
         }
-
         // SmartDashboard.putData(align);
 
     }

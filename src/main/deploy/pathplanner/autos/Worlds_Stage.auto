@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8700494324065587,
-      "y": 6.640452511674254
+      "x": 0.8503155467849413,
+      "y": 4.4499912076747234
     },
-    "rotation": 60.0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -34,13 +34,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "AmpStart_Amp"
+                        "pathName": "StartStage_Stage"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Amp_Speaker"
+                        "pathName": "Stage_SpeakerStage"
                       }
                     }
                   ]
@@ -54,42 +54,10 @@
           "data": {
             "name": "shoot"
           }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Speaker_Mid_Amp"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Mid_Amp_Speaker"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
         }
       ]
     }
   },
-  "folder": "Auto_Amp",
+  "folder": "AutoStage",
   "choreoAuto": false
 }

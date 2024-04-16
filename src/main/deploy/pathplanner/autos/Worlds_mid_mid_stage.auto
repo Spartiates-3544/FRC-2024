@@ -34,7 +34,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "shootcoller"
+                        "pathName": "speaker"
                       }
                     },
                     {
@@ -72,13 +72,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Worlds_SpeakerNote-CenterNote"
+                        "pathName": "Speaker-Mid"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Worlds_CenterNote-SpeakerNote"
+                        "pathName": "mid-speaker"
                       }
                     }
                   ]
@@ -110,13 +110,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Worlds_SpeakerNote-1stNote"
+                        "pathName": "speaker-stage"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Worlds_1stNote-Shoot"
+                        "pathName": "stage-speaker"
                       }
                     }
                   ]

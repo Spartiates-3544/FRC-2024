@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3274844567707151,
-      "y": 5.546821904454621
+      "x": 0.8700494324065587,
+      "y": 6.640452511674254
     },
-    "rotation": 0
+    "rotation": 60.0
   },
   "command": {
     "type": "sequential",
@@ -34,13 +34,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "speaker"
+                        "pathName": "AmpStart_Amp"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Worlds_CenterNote"
+                        "pathName": "Amp_Speaker"
                       }
                     }
                   ]
@@ -72,13 +72,13 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Speaker-Mid"
+                        "pathName": "Speaker_Mid_Amp"
                       }
                     },
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "mid-speaker"
+                        "pathName": "Mid_Amp_Speaker"
                       }
                     }
                   ]
@@ -110,30 +110,18 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "speaker-stage"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "stage-speaker"
+                        "pathName": "Speaker_Mid_MidAmp"
                       }
                     }
                   ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
           }
         }
       ]
     }
   },
-  "folder": "Auto_Mid",
+  "folder": "Auto_Amp",
   "choreoAuto": false
 }

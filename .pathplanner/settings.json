@@ -9,7 +9,9 @@
     "OTF_AMP"
   ],
   "autoFolders": [
-    "Auto_Mid"
+    "Auto_Amp",
+    "Auto_Mid",
+    "AutoStage"
   ],
   "defaultMaxVel": 7.25,
   "defaultMaxAccel": 7.25,

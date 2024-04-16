@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.122067353977788,
-        "y": 5.539225686154654
+        "x": 8.289990426134699,
+        "y": 5.782028487133897
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4586272249467593,
-        "y": 6.097770657079776
+        "x": 5.359508411324516,
+        "y": 7.015396338484985
       },
       "isLocked": false,
-      "linkedName": "speaker"
+      "linkedName": "Mid_MidAmp"
     },
     {
       "anchor": {
-        "x": 2.882905765811533,
-        "y": 6.985795510052559
+        "x": 1.8962114847306633,
+        "y": 6.640452511674254
       },
       "prevControl": {
-        "x": 2.601845688712777,
-        "y": 6.30656699039723
+        "x": 2.67569996678455,
+        "y": 6.531916140755359
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "speaker_Amp"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 7.0,
-    "maxAcceleration": 7.0,
+    "maxVelocity": 7.25,
+    "maxAcceleration": 7.25,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 83.82982490497032,
+    "rotation": 45.0,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "Auto_mid",
+  "folder": "Auto_Amp",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
